@@ -1,0 +1,734 @@
+{
+  "meta": {
+    "tool": "human-tester",
+    "version": "0.1.0",
+    "url": "http://localhost:4321/",
+    "startedAt": "2026-10-25T22:27:57.088Z",
+    "finishedAt": "2026-10-25T22:30:19.254Z",
+    "durationSec": 142,
+    "personas": [
+      {
+        "id": "explorer",
+        "label": "Curious first-time visitor",
+        "need": "Look around, open every page, click every link and button"
+      },
+      {
+        "id": "signup",
+        "label": "New customer who wants an account",
+        "need": "Find sign up, create an account, log out, log back in, edit profile"
+      },
+      {
+        "id": "mobile",
+        "label": "Phone user on the go",
+        "need": "Use the site on a small screen with touch"
+      },
+      {
+        "id": "keyboard",
+        "label": "Keyboard-only / accessibility user",
+        "need": "Navigate with Tab and Enter only, needs labels and visible focus"
+      },
+      {
+        "id": "messy",
+        "label": "Careless user who types messy data",
+        "need": "Submits empty forms, wrong emails, very long text, emoji, script tags"
+      },
+      {
+        "id": "impatient",
+        "label": "Impatient user on slow internet",
+        "need": "Slow 3G, double-clicks buttons, hits back/refresh"
+      }
+    ],
+    "account": {
+      "email": "testhuman+mvoefr1n8564@example.com"
+    }
+  },
+  "score": 39,
+  "counts": {
+    "critical": 2,
+    "major": 10,
+    "minor": 10,
+    "info": 2,
+    "passes": 35,
+    "pages": 8
+  },
+  "journeys": [
+    {
+      "persona": "explorer",
+      "journey": "explore",
+      "status": "passed",
+      "detail": "Visited 7 page(s)"
+    },
+    {
+      "persona": "explorer",
+      "journey": "clickAll",
+      "status": "passed",
+      "detail": "Clicked 4 element(s), 1 did nothing"
+    },
+    {
+      "persona": "signup",
+      "journey": "signup",
+      "status": "passed",
+      "detail": "Created account testhuman+mvoefr1n8564@example.com"
+    },
+    {
+      "persona": "signup",
+      "journey": "login",
+      "status": "passed",
+      "detail": "Logged in as testhuman+mvoefr1n8564@example.com"
+    },
+    {
+      "persona": "signup",
+      "journey": "editProfile",
+      "status": "failed",
+      "detail": "Edit did not persist after reload"
+    },
+    {
+      "persona": "mobile",
+      "journey": "explore",
+      "status": "passed",
+      "detail": "Visited 7 page(s)"
+    },
+    {
+      "persona": "mobile",
+      "journey": "clickAll",
+      "status": "passed",
+      "detail": "Clicked 4 element(s), 1 did nothing"
+    },
+    {
+      "persona": "mobile",
+      "journey": "mobileChecks",
+      "status": "passed",
+      "detail": "Phone layout checks run"
+    },
+    {
+      "persona": "keyboard",
+      "journey": "keyboard",
+      "status": "passed",
+      "detail": "Tabbed through 9 element(s)"
+    },
+    {
+      "persona": "keyboard",
+      "journey": "a11y",
+      "status": "passed",
+      "detail": "Accessibility checks run"
+    },
+    {
+      "persona": "messy",
+      "journey": "forms",
+      "status": "passed",
+      "detail": "Submitted 24 messy form attempt(s)"
+    },
+    {
+      "persona": "impatient",
+      "journey": "performance",
+      "status": "passed",
+      "detail": "Measured 4 page(s) on throttled network"
+    },
+    {
+      "persona": "impatient",
+      "journey": "doubleClick",
+      "status": "passed",
+      "detail": "Back/refresh behaviour checked"
+    }
+  ],
+  "issues": [
+    {
+      "severity": "critical",
+      "category": "validation",
+      "personas": [
+        "messy"
+      ],
+      "page": "http://localhost:4321/contact",
+      "title": "Form crashes the server with very long text input",
+      "detail": "500 POST http://localhost:4321/contact",
+      "suggestion": "Validate and sanitise input on the server; return a friendly 400 error instead of crashing."
+    },
+    {
+      "severity": "critical",
+      "category": "security",
+      "personas": [
+        "messy"
+      ],
+      "page": "http://localhost:4321/contact",
+      "title": "Form is vulnerable to script injection (XSS)",
+      "detail": "Typing <script>alert(\"ht-xss\")</script> executed JavaScript.",
+      "suggestion": "Escape user input before showing it on the page. Never use innerHTML with user data."
+    },
+    {
+      "severity": "major",
+      "category": "broken",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard"
+      ],
+      "page": "http://localhost:4321/",
+      "title": "1 broken image(s)",
+      "detail": "http://localhost:4321/hero.png",
+      "suggestion": "Fix or remove the image URLs — users see empty boxes."
+    },
+    {
+      "severity": "major",
+      "category": "broken",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard"
+      ],
+      "page": "http://localhost:4321/about",
+      "title": "1 broken image(s)",
+      "detail": "http://localhost:4321/team.jpg",
+      "suggestion": "Fix or remove the image URLs — users see empty boxes."
+    },
+    {
+      "severity": "major",
+      "category": "content",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard"
+      ],
+      "page": "http://localhost:4321/about",
+      "title": "Placeholder / unfinished text found",
+      "detail": "Found \"Lorem ipsum\".",
+      "suggestion": "Replace dummy text before launch — it looks unfinished to real users. (Common in AI-generated sites.)"
+    },
+    {
+      "severity": "major",
+      "category": "accessibility",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard"
+      ],
+      "page": "http://localhost:4321/contact",
+      "title": "2 form field(s) without a label",
+      "detail": "2 rely only on placeholder text.",
+      "suggestion": "Add a visible <label for> to each field — placeholders disappear when typing and screen readers may skip them."
+    },
+    {
+      "severity": "major",
+      "category": "broken",
+      "personas": [
+        "explorer",
+        "mobile"
+      ],
+      "page": "http://localhost:4321/team",
+      "title": "Page not found (404)",
+      "detail": "Linked from http://localhost:4321/about",
+      "suggestion": "Fix or remove the link pointing here, or add the page."
+    },
+    {
+      "severity": "major",
+      "category": "javascript",
+      "personas": [
+        "explorer",
+        "mobile"
+      ],
+      "page": "http://localhost:4321/",
+      "title": "Uncaught JavaScript exception",
+      "detail": "openCart is not defined",
+      "suggestion": "An uncaught exception stops the rest of the script — fix the root cause or add error handling."
+    },
+    {
+      "severity": "major",
+      "category": "javascript",
+      "personas": [
+        "explorer",
+        "mobile"
+      ],
+      "page": "http://localhost:4321/",
+      "title": "Clicking \"Open cart\" causes a JavaScript error",
+      "detail": "openCart is not defined",
+      "suggestion": "Open the browser console, click this element, and fix the error shown.",
+      "screenshot": "shots/explorer-click-error-1792967290321.png"
+    },
+    {
+      "severity": "major",
+      "category": "journey",
+      "personas": [
+        "signup"
+      ],
+      "page": "http://localhost:4321/profile",
+      "title": "Profile changes are not saved",
+      "detail": "Changed a field to \"Editedefypp\", saved, reloaded — the old value came back.",
+      "suggestion": "Check the update API actually writes to the database and the page reads fresh data.",
+      "screenshot": "shots/signup-profile-fail-1792967312730.png"
+    },
+    {
+      "severity": "major",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/products",
+      "title": "Page scrolls sideways on phones",
+      "detail": "Content is 916px wide on a 390px screen.",
+      "suggestion": "Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto."
+    },
+    {
+      "severity": "major",
+      "category": "validation",
+      "personas": [
+        "messy"
+      ],
+      "page": "http://localhost:4321/contact",
+      "title": "Form #1 accepts empty submission",
+      "detail": "",
+      "suggestion": "Mark required fields with `required` and validate on the server too."
+    },
+    {
+      "severity": "minor",
+      "category": "accessibility",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard"
+      ],
+      "page": "http://localhost:4321/about",
+      "title": "1 image(s) without alt text",
+      "detail": "",
+      "suggestion": "Add alt=\"\" text describing each image (or alt=\"\" for decorative ones)."
+    },
+    {
+      "severity": "minor",
+      "category": "ux",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard"
+      ],
+      "page": "http://localhost:4321/about",
+      "title": "1 link(s) that go nowhere",
+      "detail": "href is missing or \"#\".",
+      "suggestion": "Point these links somewhere real or turn them into buttons."
+    },
+    {
+      "severity": "minor",
+      "category": "ux",
+      "personas": [
+        "explorer",
+        "mobile"
+      ],
+      "page": "http://localhost:4321/",
+      "title": "\"Subscribe to newsletter\" does nothing when clicked",
+      "detail": "No page change, no network request, no new content.",
+      "suggestion": "Wire this button up, or remove it — users think the site is broken."
+    },
+    {
+      "severity": "minor",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/",
+      "title": "9 tap targets are too small",
+      "detail": "",
+      "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
+    },
+    {
+      "severity": "minor",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/about",
+      "title": "6 tap targets are too small",
+      "detail": "",
+      "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
+    },
+    {
+      "severity": "minor",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/products",
+      "title": "6 tap targets are too small",
+      "detail": "",
+      "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
+    },
+    {
+      "severity": "minor",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/contact",
+      "title": "8 tap targets are too small",
+      "detail": "",
+      "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
+    },
+    {
+      "severity": "minor",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/login",
+      "title": "9 tap targets are too small",
+      "detail": "",
+      "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
+    },
+    {
+      "severity": "minor",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/signup",
+      "title": "10 tap targets are too small",
+      "detail": "",
+      "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
+    },
+    {
+      "severity": "minor",
+      "category": "accessibility",
+      "personas": [
+        "keyboard"
+      ],
+      "page": "http://localhost:4321/",
+      "title": "3 elements have no visible focus outline",
+      "detail": "",
+      "suggestion": "Don't remove outline in CSS; add a clear :focus-visible style so keyboard users see where they are."
+    },
+    {
+      "severity": "info",
+      "category": "polish",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard"
+      ],
+      "page": "http://localhost:4321/",
+      "title": "No favicon",
+      "detail": "",
+      "suggestion": "Add a favicon so the site is recognisable in tabs and bookmarks."
+    },
+    {
+      "severity": "info",
+      "category": "accessibility",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard"
+      ],
+      "page": "http://localhost:4321/products",
+      "title": "Heading levels skip",
+      "detail": "1 jump(s), e.g. H1 → H3.",
+      "suggestion": "Keep heading levels in order for screen-reader users."
+    }
+  ],
+  "passes": [
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/about",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/about",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/products",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/products",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "explorer",
+      "page": "http://localhost:4321/products",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/contact",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/contact",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "explorer",
+      "page": "http://localhost:4321/contact",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/login",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/login",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "explorer",
+      "page": "http://localhost:4321/login",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/signup",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/signup",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "explorer",
+      "page": "http://localhost:4321/signup",
+      "title": "All images load"
+    },
+    {
+      "category": "interaction",
+      "persona": "explorer",
+      "page": "http://localhost:4321/",
+      "title": "\"Show more\" responds to clicks"
+    },
+    {
+      "category": "interaction",
+      "persona": "explorer",
+      "page": "http://localhost:4321/about",
+      "title": "\"Careers\" responds to clicks"
+    },
+    {
+      "category": "validation",
+      "persona": "signup",
+      "page": "http://localhost:4321/signup",
+      "title": "Empty sign-up is rejected"
+    },
+    {
+      "category": "journey",
+      "persona": "signup",
+      "page": "http://localhost:4321/signup",
+      "title": "New user can sign up"
+    },
+    {
+      "category": "security",
+      "persona": "signup",
+      "page": "http://localhost:4321/login",
+      "title": "Wrong password is rejected with a message"
+    },
+    {
+      "category": "journey",
+      "persona": "signup",
+      "page": "http://localhost:4321/login",
+      "title": "Existing user can log in"
+    },
+    {
+      "category": "mobile",
+      "persona": "mobile",
+      "page": "http://localhost:4321/",
+      "title": "Fits phone screen width"
+    },
+    {
+      "category": "mobile",
+      "persona": "mobile",
+      "page": "http://localhost:4321/about",
+      "title": "Fits phone screen width"
+    },
+    {
+      "category": "mobile",
+      "persona": "mobile",
+      "page": "http://localhost:4321/contact",
+      "title": "Fits phone screen width"
+    },
+    {
+      "category": "mobile",
+      "persona": "mobile",
+      "page": "http://localhost:4321/login",
+      "title": "Fits phone screen width"
+    },
+    {
+      "category": "mobile",
+      "persona": "mobile",
+      "page": "http://localhost:4321/signup",
+      "title": "Fits phone screen width"
+    },
+    {
+      "category": "accessibility",
+      "persona": "keyboard",
+      "page": "http://localhost:4321/",
+      "title": "9 elements reachable by keyboard"
+    },
+    {
+      "category": "validation",
+      "persona": "messy",
+      "page": "http://localhost:4321/login",
+      "title": "Form #1 blocks empty submission"
+    },
+    {
+      "category": "validation",
+      "persona": "messy",
+      "page": "http://localhost:4321/signup",
+      "title": "Form #1 blocks empty submission"
+    },
+    {
+      "category": "performance",
+      "persona": "impatient",
+      "page": "http://localhost:4321/",
+      "title": "Loads in 1.7s on slow network"
+    },
+    {
+      "category": "performance",
+      "persona": "impatient",
+      "page": "http://localhost:4321/about",
+      "title": "Loads in 1.7s on slow network"
+    },
+    {
+      "category": "performance",
+      "persona": "impatient",
+      "page": "http://localhost:4321/products",
+      "title": "Loads in 1.4s on slow network"
+    },
+    {
+      "category": "performance",
+      "persona": "impatient",
+      "page": "http://localhost:4321/contact",
+      "title": "Loads in 1.4s on slow network"
+    },
+    {
+      "category": "ux",
+      "persona": "impatient",
+      "page": "http://localhost:4321/about",
+      "title": "Back button works"
+    }
+  ],
+  "pages": [
+    {
+      "url": "http://localhost:4321/",
+      "personas": [
+        "explorer",
+        "signup",
+        "mobile",
+        "keyboard",
+        "impatient"
+      ],
+      "status": 200,
+      "loadMs": 1125,
+      "title": "Demo Shop",
+      "forms": 0
+    },
+    {
+      "url": "http://localhost:4321/about",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard",
+        "impatient"
+      ],
+      "status": 200,
+      "loadMs": 1127,
+      "title": "About",
+      "forms": 0
+    },
+    {
+      "url": "http://localhost:4321/products",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard",
+        "impatient"
+      ],
+      "status": 200,
+      "loadMs": 1121,
+      "title": "Products",
+      "forms": 0
+    },
+    {
+      "url": "http://localhost:4321/contact",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard",
+        "messy",
+        "impatient"
+      ],
+      "status": 200,
+      "loadMs": 1123,
+      "title": "Contact",
+      "forms": 1
+    },
+    {
+      "url": "http://localhost:4321/login",
+      "personas": [
+        "explorer",
+        "mobile",
+        "keyboard",
+        "messy",
+        "impatient"
+      ],
+      "status": 200,
+      "loadMs": 1116,
+      "title": "Log in",
+      "forms": 1
+    },
+    {
+      "url": "http://localhost:4321/signup",
+      "personas": [
+        "explorer",
+        "mobile",
+        "messy"
+      ],
+      "status": 200,
+      "loadMs": 1119,
+      "title": "Sign up",
+      "forms": 1
+    },
+    {
+      "url": "http://localhost:4321/team",
+      "personas": [
+        "explorer",
+        "mobile"
+      ],
+      "status": 404,
+      "loadMs": 1119
+    },
+    {
+      "url": "http://localhost:4321/profile",
+      "personas": [
+        "signup"
+      ],
+      "status": 200,
+      "loadMs": 1124
+    }
+  ],
+  "ai": null
+}

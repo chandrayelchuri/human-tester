@@ -1,0 +1,141 @@
+{
+  "url": "http://localhost:4321/",
+  "score": 39,
+  "counts": {
+    "critical": 2,
+    "major": 10,
+    "minor": 10,
+    "info": 2,
+    "passes": 35,
+    "pages": 8
+  },
+  "finishedAt": "2026-10-25T22:30:19.254Z",
+  "journeys": [
+    {
+      "persona": "explorer",
+      "journey": "explore",
+      "status": "passed",
+      "detail": "Visited 7 page(s)"
+    },
+    {
+      "persona": "explorer",
+      "journey": "clickAll",
+      "status": "passed",
+      "detail": "Clicked 4 element(s), 1 did nothing"
+    },
+    {
+      "persona": "signup",
+      "journey": "signup",
+      "status": "passed",
+      "detail": "Created account testhuman+mvoefr1n8564@example.com"
+    },
+    {
+      "persona": "signup",
+      "journey": "login",
+      "status": "passed",
+      "detail": "Logged in as testhuman+mvoefr1n8564@example.com"
+    },
+    {
+      "persona": "signup",
+      "journey": "editProfile",
+      "status": "failed",
+      "detail": "Edit did not persist after reload"
+    },
+    {
+      "persona": "mobile",
+      "journey": "explore",
+      "status": "passed",
+      "detail": "Visited 7 page(s)"
+    },
+    {
+      "persona": "mobile",
+      "journey": "clickAll",
+      "status": "passed",
+      "detail": "Clicked 4 element(s), 1 did nothing"
+    },
+    {
+      "persona": "mobile",
+      "journey": "mobileChecks",
+      "status": "passed",
+      "detail": "Phone layout checks run"
+    },
+    {
+      "persona": "keyboard",
+      "journey": "keyboard",
+      "status": "passed",
+      "detail": "Tabbed through 9 element(s)"
+    },
+    {
+      "persona": "keyboard",
+      "journey": "a11y",
+      "status": "passed",
+      "detail": "Accessibility checks run"
+    },
+    {
+      "persona": "messy",
+      "journey": "forms",
+      "status": "passed",
+      "detail": "Submitted 24 messy form attempt(s)"
+    },
+    {
+      "persona": "impatient",
+      "journey": "performance",
+      "status": "passed",
+      "detail": "Measured 4 page(s) on throttled network"
+    },
+    {
+      "persona": "impatient",
+      "journey": "doubleClick",
+      "status": "passed",
+      "detail": "Back/refresh behaviour checked"
+    }
+  ],
+  "top": [
+    {
+      "title": "Form crashes the server with very long text input",
+      "suggestion": "Validate and sanitise input on the server; return a friendly 400 error instead of crashing.",
+      "severity": "critical",
+      "pages": [
+        "http://localhost:4321/contact"
+      ],
+      "weight": 4
+    },
+    {
+      "title": "Form is vulnerable to script injection (XSS)",
+      "suggestion": "Escape user input before showing it on the page. Never use innerHTML with user data.",
+      "severity": "critical",
+      "pages": [
+        "http://localhost:4321/contact"
+      ],
+      "weight": 4
+    },
+    {
+      "title": "Broken image(s)",
+      "suggestion": "Fix or remove the image URLs — users see empty boxes.",
+      "severity": "major",
+      "pages": [
+        "http://localhost:4321/",
+        "http://localhost:4321/about"
+      ],
+      "weight": 6
+    },
+    {
+      "title": "Placeholder / unfinished text found",
+      "suggestion": "Replace dummy text before launch — it looks unfinished to real users. (Common in AI-generated sites.)",
+      "severity": "major",
+      "pages": [
+        "http://localhost:4321/about"
+      ],
+      "weight": 3
+    },
+    {
+      "title": "Form field(s) without a label",
+      "suggestion": "Add a visible <label for> to each field — placeholders disappear when typing and screen readers may skip them.",
+      "severity": "major",
+      "pages": [
+        "http://localhost:4321/contact"
+      ],
+      "weight": 3
+    }
+  ]
+}

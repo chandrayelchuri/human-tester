@@ -1,0 +1,31 @@
+{
+  "name": "human-tester",
+  "version": "0.1.0",
+  "description": "Human texture testing — it tests all your websites and apps which you build by AI. Simulates many real users who click everything, sign up, log in, edit, and report what works, what breaks, and what to improve.",
+  "type": "module",
+  "bin": {
+    "human-tester": "bin/human-tester.js"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "test:demo": "node demo/server.js & sleep 1 && node bin/human-tester.js http://localhost:4321 --out reports/demo; kill %1",
+    "start": "node bin/human-tester.js"
+  },
+  "keywords": [
+    "testing",
+    "e2e",
+    "qa",
+    "playwright",
+    "ai",
+    "user-simulation",
+    "accessibility",
+    "monkey-testing"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}

@@ -1,0 +1,6 @@
+node_modules/
+human-tester-report/
+ht-runs/
+reports/*
+!reports/demo/
+.env

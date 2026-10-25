@@ -1,0 +1,52 @@
+name: 'Human Tester'
+description: 'Human texture testing — virtual users test every page, button, sign-up, login and form on sites built with AI.'
+branding:
+  icon: 'users'
+  color: 'purple'
+inputs:
+  url:
+    description: 'Site to test'
+    required: true
+  personas:
+    description: 'all, or comma list: explorer,signup,mobile,keyboard,messy,impatient'
+    default: 'all'
+  max-pages:
+    default: '25'
+  fail-under:
+    description: 'Fail the job if the score is below this number (0 = never fail)'
+    default: '0'
+  login-email:
+    default: ''
+  login-password:
+    default: ''
+  anthropic-api-key:
+    description: 'Optional — adds an AI-written improvement plan'
+    default: ''
+outputs:
+  score:
+    description: 'Score out of 100'
+    value: ${{ steps.run.outputs.score }}
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@v4
+      with: { node-version: '20' }
+    - shell: bash
+      run: |
+        cd "${{ github.action_path }}" && npm install --omit=dev && npx playwright install --with-deps chromium
+    - id: run
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+        HT_LOGIN_EMAIL: ${{ inputs.login-email }}
+        HT_LOGIN_PASSWORD: ${{ inputs.login-password }}
+      run: |
+        node "${{ github.action_path }}/bin/human-tester.js" "${{ inputs.url }}" --personas "${{ inputs.personas }}" --max-pages "${{ inputs.max-pages }}" --out human-tester-report
+        echo "score=$(node -p "require('./human-tester-report/summary.json').score")" >> "$GITHUB_OUTPUT"
+        cat human-tester-report/report.md >> "$GITHUB_STEP_SUMMARY"
+        if [ "${{ inputs.fail-under }}" != "0" ] && [ "$(node -p "require('./human-tester-report/summary.json').score")" -lt "${{ inputs.fail-under }}" ]; then echo "Score below ${{ inputs.fail-under }}"; exit 1; fi
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: human-tester-report
+        path: human-tester-report

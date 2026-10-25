@@ -1,0 +1,43 @@
+# Run Human Tester on demand (Actions tab → "Test a site" → Run workflow)
+# or every Monday morning against the sites listed below.
+name: Test a site
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Site URL to test'
+        required: true
+      personas:
+        description: 'all or comma list'
+        default: 'all'
+  schedule:
+    - cron: '17 13 * * 1'
+
+jobs:
+  test:
+    if: github.event.inputs.url != 'demo'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          url: ${{ github.event.inputs.url || vars.HT_DEFAULT_URL || 'https://example.com' }}
+          personas: ${{ github.event.inputs.personas || 'all' }}
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  demo:
+    # self-test: the bundled buggy demo app must keep catching its planted bugs
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.url == 'demo'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm install && npx playwright install --with-deps chromium
+      - run: |
+          node demo/server.js &
+          sleep 1
+          node bin/human-tester.js http://localhost:4321 --max-pages 10 --out human-tester-report
+      - uses: actions/upload-artifact@v4
+        with: { name: demo-report, path: human-tester-report }

@@ -1,0 +1,50 @@
+<!--
+  Human Tester admin widget — drop into any admin dashboard (e.g. kinovo.com/admin).
+  1. Run the API somewhere:  HT_API_TOKEN=secret npx human-tester serve --port 8787
+  2. Set API and TOKEN below (keep the token server-side in production — proxy it through your backend).
+  3. Paste this whole file into an admin page, or load it in an <iframe>.
+-->
+<div id="ht-widget">
+  <style>
+    #ht-widget{font:14px/1.45 system-ui,sans-serif;border:1px solid #e2e8f0;border-radius:12px;padding:16px;max-width:900px}
+    #ht-widget h3{margin:0 0 4px}#ht-widget .sub{color:#64748b;margin-bottom:12px}
+    #ht-widget form{display:flex;gap:8px;flex-wrap:wrap}#ht-widget input,#ht-widget select{padding:8px;border:1px solid #cbd5e1;border-radius:8px;flex:1;min-width:180px}
+    #ht-widget button{padding:8px 14px;border:0;border-radius:8px;background:#4f46e5;color:#fff;cursor:pointer}
+    #ht-widget table{width:100%;border-collapse:collapse;margin-top:14px}#ht-widget td,#ht-widget th{padding:6px;border-bottom:1px solid #e2e8f0;text-align:left}
+    #ht-widget .s{font-weight:700}#ht-widget iframe{width:100%;height:700px;border:1px solid #e2e8f0;border-radius:8px;margin-top:12px}
+  </style>
+  <h3>Human Tester</h3>
+  <div class="sub">Virtual users click, sign up, log in and break your sites — then tell you what to fix.</div>
+  <form id="ht-form">
+    <input name="url" placeholder="https://your-site.com" required>
+    <select name="personas"><option value="all">All virtual users</option><option value="explorer,mobile">Quick: browse + phone</option><option value="signup">Accounts only</option><option value="messy">Forms only</option></select>
+    <button>Run test</button>
+  </form>
+  <table><thead><tr><th>Site</th><th>Status</th><th>Score</th><th>Critical / Major</th><th></th></tr></thead><tbody id="ht-rows"></tbody></table>
+  <iframe id="ht-frame" hidden title="Human Tester report"></iframe>
+  <script>
+  (() => {
+    const API = 'http://localhost:8787';   // ← your Human Tester API URL
+    const TOKEN = '';                       // ← HT_API_TOKEN (better: proxy through your backend)
+    const h = { 'content-type': 'application/json', ...(TOKEN ? { authorization: 'Bearer ' + TOKEN } : {}) };
+    const rows = document.getElementById('ht-rows'), frame = document.getElementById('ht-frame');
+    const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    async function load() {
+      const runs = await fetch(API + '/api/runs', { headers: h }).then((r) => r.json()).catch(() => []);
+      rows.innerHTML = runs.map((r) => `<tr><td>${esc(r.url)}</td><td>${esc(r.status)}</td>
+        <td class="s" style="color:${r.score >= 75 ? '#16a34a' : r.score >= 55 ? '#d97706' : '#dc2626'}">${r.score ?? '–'}</td>
+        <td>${r.counts ? r.counts.critical + ' / ' + r.counts.major : '–'}</td>
+        <td>${r.status === 'done' ? `<button data-id="${esc(r.id)}">View report</button>` : ''}</td></tr>`).join('');
+      rows.querySelectorAll('button[data-id]').forEach((b) => b.onclick = () => { frame.hidden = false; frame.src = API + '/reports/' + b.dataset.id + '/'; });
+      if (runs.some((r) => r.status !== 'done' && r.status !== 'error')) setTimeout(load, 5000);
+    }
+    document.getElementById('ht-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      await fetch(API + '/api/runs', { method: 'POST', headers: h, body: JSON.stringify({ url: f.get('url'), personas: f.get('personas') }) });
+      load();
+    };
+    load();
+  })();
+  </script>
+</div>

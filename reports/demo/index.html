@@ -1,0 +1,273 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Human Tester Report</title>
+<style>
+:root{--bg:#f8fafc;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--accent:#4f46e5}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1020;--card:#121a2e;--ink:#e2e8f0;--muted:#94a3b8;--line:#1f2a44;--accent:#818cf8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:24px 16px 64px}
+header{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.score{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;border:8px solid #dc2626;font-size:32px;font-weight:800}
+h1{margin:0;font-size:22px}h2{margin:32px 0 12px;font-size:18px}.muted{color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}.card b{font-size:22px;display:block}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+td,th{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:13px;color:var(--muted)}
+td.failed{color:#dc2626;font-weight:600}td.passed{color:#16a34a}
+ol.top li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0}
+.pill{color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+.issue{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:6px 0}.issue summary{padding:10px 12px;cursor:pointer}
+.issue .body{padding:0 12px 12px}.issue img{max-width:100%;border:1px solid var(--line);border-radius:8px;margin-top:8px}
+pre{white-space:pre-wrap;word-break:break-all;background:var(--bg);padding:8px;border-radius:8px;font-size:12px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.filters button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:4px 10px;cursor:pointer}
+.filters button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.passes{columns:2;column-gap:24px}@media(max-width:640px){.passes{columns:1}td:nth-child(4){display:none}}
+.ai{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+a{color:var(--accent)}
+</style></head><body><div class="wrap">
+<header><div class="score">39</div><div>
+<h1>Human Tester report</h1>
+<div><a href="http://localhost:4321/" target="_blank" rel="noopener">http://localhost:4321/</a></div>
+<div class="muted">Poor · 10/25/2026, 5:30:19 PM · 142s · 6 virtual users</div></div></header>
+<div class="cards">
+<div class="card"><b style="color:#dc2626">2</b>Critical</div>
+<div class="card"><b style="color:#ea580c">10</b>Major</div>
+<div class="card"><b style="color:#ca8a04">10</b>Minor</div>
+<div class="card"><b style="color:#16a34a">35</b>Checks passed</div>
+<div class="card"><b>8</b>Pages visited</div>
+</div>
+<h2>What each virtual user tried</h2>
+<table><tr><th>User</th><th>Journey</th><th>Result</th><th>Detail</th></tr><tr><td>explorer</td><td>explore</td><td class="passed">✅ Passed</td><td>Visited 7 page(s)</td></tr><tr><td>explorer</td><td>clickAll</td><td class="passed">✅ Passed</td><td>Clicked 4 element(s), 1 did nothing</td></tr><tr><td>signup</td><td>signup</td><td class="passed">✅ Passed</td><td>Created account testhuman+mvoefr1n8564@example.com</td></tr><tr><td>signup</td><td>login</td><td class="passed">✅ Passed</td><td>Logged in as testhuman+mvoefr1n8564@example.com</td></tr><tr><td>signup</td><td>editProfile</td><td class="failed">❌ Failed</td><td>Edit did not persist after reload</td></tr><tr><td>mobile</td><td>explore</td><td class="passed">✅ Passed</td><td>Visited 7 page(s)</td></tr><tr><td>mobile</td><td>clickAll</td><td class="passed">✅ Passed</td><td>Clicked 4 element(s), 1 did nothing</td></tr><tr><td>mobile</td><td>mobileChecks</td><td class="passed">✅ Passed</td><td>Phone layout checks run</td></tr><tr><td>keyboard</td><td>keyboard</td><td class="passed">✅ Passed</td><td>Tabbed through 9 element(s)</td></tr><tr><td>keyboard</td><td>a11y</td><td class="passed">✅ Passed</td><td>Accessibility checks run</td></tr><tr><td>messy</td><td>forms</td><td class="passed">✅ Passed</td><td>Submitted 24 messy form attempt(s)</td></tr><tr><td>impatient</td><td>performance</td><td class="passed">✅ Passed</td><td>Measured 4 page(s) on throttled network</td></tr><tr><td>impatient</td><td>doubleClick</td><td class="passed">✅ Passed</td><td>Back/refresh behaviour checked</td></tr></table>
+<h2>Top improvements</h2>
+<ol class="top"><li><span class="pill" style="background:#dc2626">critical</span> <b>Form crashes the server with very long text input</b><br>Validate and sanitise input on the server; return a friendly 400 error instead of crashing. <span class="muted">(1 page)</span></li><li><span class="pill" style="background:#dc2626">critical</span> <b>Form is vulnerable to script injection (XSS)</b><br>Escape user input before showing it on the page. Never use innerHTML with user data. <span class="muted">(1 page)</span></li><li><span class="pill" style="background:#ea580c">major</span> <b>Broken image(s)</b><br>Fix or remove the image URLs — users see empty boxes. <span class="muted">(2 pages)</span></li><li><span class="pill" style="background:#ea580c">major</span> <b>Placeholder / unfinished text found</b><br>Replace dummy text before launch — it looks unfinished to real users. (Common in AI-generated sites.) <span class="muted">(1 page)</span></li><li><span class="pill" style="background:#ea580c">major</span> <b>Form field(s) without a label</b><br>Add a visible &lt;label for&gt; to each field — placeholders disappear when typing and screen readers may skip them. <span class="muted">(1 page)</span></li><li><span class="pill" style="background:#ea580c">major</span> <b>Page not found (404)</b><br>Fix or remove the link pointing here, or add the page. <span class="muted">(1 page)</span></li><li><span class="pill" style="background:#ea580c">major</span> <b>Uncaught JavaScript exception</b><br>An uncaught exception stops the rest of the script — fix the root cause or add error handling. <span class="muted">(1 page)</span></li><li><span class="pill" style="background:#ea580c">major</span> <b>Clicking &quot;Open cart&quot; causes a JavaScript error</b><br>Open the browser console, click this element, and fix the error shown. <span class="muted">(1 page)</span></li><li><span class="pill" style="background:#ea580c">major</span> <b>Profile changes are not saved</b><br>Check the update API actually writes to the database and the page reads fresh data. <span class="muted">(1 page)</span></li><li><span class="pill" style="background:#ea580c">major</span> <b>Page scrolls sideways on phones</b><br>Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto. <span class="muted">(1 page)</span></li></ol>
+
+<h2>All issues (24)</h2>
+<div class="filters"><button class="on" data-f="all">All</button><button data-f="sev:critical">critical</button><button data-f="sev:major">major</button><button data-f="sev:minor">minor</button><button data-f="sev:info">info</button><button data-f="cat:validation">validation</button><button data-f="cat:security">security</button><button data-f="cat:broken">broken</button><button data-f="cat:content">content</button><button data-f="cat:accessibility">accessibility</button><button data-f="cat:javascript">javascript</button><button data-f="cat:journey">journey</button><button data-f="cat:mobile">mobile</button><button data-f="cat:ux">ux</button><button data-f="cat:polish">polish</button></div>
+<div id="issues">
+    <details class="issue" data-sev="critical" data-cat="validation">
+      <summary><span class="pill" style="background:#dc2626">critical</span> <b>Form crashes the server with very long text input</b> <span class="muted">· validation · messy</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/contact" target="_blank" rel="noopener">http://localhost:4321/contact</a></div>
+        <pre>500 POST http://localhost:4321/contact</pre>
+        <p>💡 Validate and sanitise input on the server; return a friendly 400 error instead of crashing.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="critical" data-cat="security">
+      <summary><span class="pill" style="background:#dc2626">critical</span> <b>Form is vulnerable to script injection (XSS)</b> <span class="muted">· security · messy</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/contact" target="_blank" rel="noopener">http://localhost:4321/contact</a></div>
+        <pre>Typing &lt;script&gt;alert(&quot;ht-xss&quot;)&lt;/script&gt; executed JavaScript.</pre>
+        <p>💡 Escape user input before showing it on the page. Never use innerHTML with user data.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="major" data-cat="broken">
+      <summary><span class="pill" style="background:#ea580c">major</span> <b>1 broken image(s)</b> <span class="muted">· broken · explorer, mobile, keyboard</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/" target="_blank" rel="noopener">http://localhost:4321/</a></div>
+        <pre>http://localhost:4321/hero.png</pre>
+        <p>💡 Fix or remove the image URLs — users see empty boxes.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="major" data-cat="broken">
+      <summary><span class="pill" style="background:#ea580c">major</span> <b>1 broken image(s)</b> <span class="muted">· broken · explorer, mobile, keyboard</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/about" target="_blank" rel="noopener">http://localhost:4321/about</a></div>
+        <pre>http://localhost:4321/team.jpg</pre>
+        <p>💡 Fix or remove the image URLs — users see empty boxes.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="major" data-cat="content">
+      <summary><span class="pill" style="background:#ea580c">major</span> <b>Placeholder / unfinished text found</b> <span class="muted">· content · explorer, mobile, keyboard</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/about" target="_blank" rel="noopener">http://localhost:4321/about</a></div>
+        <pre>Found &quot;Lorem ipsum&quot;.</pre>
+        <p>💡 Replace dummy text before launch — it looks unfinished to real users. (Common in AI-generated sites.)</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="major" data-cat="accessibility">
+      <summary><span class="pill" style="background:#ea580c">major</span> <b>2 form field(s) without a label</b> <span class="muted">· accessibility · explorer, mobile, keyboard</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/contact" target="_blank" rel="noopener">http://localhost:4321/contact</a></div>
+        <pre>2 rely only on placeholder text.</pre>
+        <p>💡 Add a visible &lt;label for&gt; to each field — placeholders disappear when typing and screen readers may skip them.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="major" data-cat="broken">
+      <summary><span class="pill" style="background:#ea580c">major</span> <b>Page not found (404)</b> <span class="muted">· broken · explorer, mobile</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/team" target="_blank" rel="noopener">http://localhost:4321/team</a></div>
+        <pre>Linked from http://localhost:4321/about</pre>
+        <p>💡 Fix or remove the link pointing here, or add the page.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="major" data-cat="javascript">
+      <summary><span class="pill" style="background:#ea580c">major</span> <b>Uncaught JavaScript exception</b> <span class="muted">· javascript · explorer, mobile</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/" target="_blank" rel="noopener">http://localhost:4321/</a></div>
+        <pre>openCart is not defined</pre>
+        <p>💡 An uncaught exception stops the rest of the script — fix the root cause or add error handling.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="major" data-cat="javascript">
+      <summary><span class="pill" style="background:#ea580c">major</span> <b>Clicking &quot;Open cart&quot; causes a JavaScript error</b> <span class="muted">· javascript · explorer, mobile</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/" target="_blank" rel="noopener">http://localhost:4321/</a></div>
+        <pre>openCart is not defined</pre>
+        <p>💡 Open the browser console, click this element, and fix the error shown.</p>
+        <a href="shots/explorer-click-error-1792967290321.png" target="_blank"><img src="shots/explorer-click-error-1792967290321.png" alt="Screenshot of the problem" loading="lazy"></a>
+      </div>
+    </details>
+    <details class="issue" data-sev="major" data-cat="journey">
+      <summary><span class="pill" style="background:#ea580c">major</span> <b>Profile changes are not saved</b> <span class="muted">· journey · signup</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/profile" target="_blank" rel="noopener">http://localhost:4321/profile</a></div>
+        <pre>Changed a field to &quot;Editedefypp&quot;, saved, reloaded — the old value came back.</pre>
+        <p>💡 Check the update API actually writes to the database and the page reads fresh data.</p>
+        <a href="shots/signup-profile-fail-1792967312730.png" target="_blank"><img src="shots/signup-profile-fail-1792967312730.png" alt="Screenshot of the problem" loading="lazy"></a>
+      </div>
+    </details>
+    <details class="issue" data-sev="major" data-cat="mobile">
+      <summary><span class="pill" style="background:#ea580c">major</span> <b>Page scrolls sideways on phones</b> <span class="muted">· mobile · mobile</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/products" target="_blank" rel="noopener">http://localhost:4321/products</a></div>
+        <pre>Content is 916px wide on a 390px screen.</pre>
+        <p>💡 Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="major" data-cat="validation">
+      <summary><span class="pill" style="background:#ea580c">major</span> <b>Form #1 accepts empty submission</b> <span class="muted">· validation · messy</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/contact" target="_blank" rel="noopener">http://localhost:4321/contact</a></div>
+        
+        <p>💡 Mark required fields with `required` and validate on the server too.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="minor" data-cat="accessibility">
+      <summary><span class="pill" style="background:#ca8a04">minor</span> <b>1 image(s) without alt text</b> <span class="muted">· accessibility · explorer, mobile, keyboard</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/about" target="_blank" rel="noopener">http://localhost:4321/about</a></div>
+        
+        <p>💡 Add alt=&quot;&quot; text describing each image (or alt=&quot;&quot; for decorative ones).</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="minor" data-cat="ux">
+      <summary><span class="pill" style="background:#ca8a04">minor</span> <b>1 link(s) that go nowhere</b> <span class="muted">· ux · explorer, mobile, keyboard</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/about" target="_blank" rel="noopener">http://localhost:4321/about</a></div>
+        <pre>href is missing or &quot;#&quot;.</pre>
+        <p>💡 Point these links somewhere real or turn them into buttons.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="minor" data-cat="ux">
+      <summary><span class="pill" style="background:#ca8a04">minor</span> <b>&quot;Subscribe to newsletter&quot; does nothing when clicked</b> <span class="muted">· ux · explorer, mobile</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/" target="_blank" rel="noopener">http://localhost:4321/</a></div>
+        <pre>No page change, no network request, no new content.</pre>
+        <p>💡 Wire this button up, or remove it — users think the site is broken.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="minor" data-cat="mobile">
+      <summary><span class="pill" style="background:#ca8a04">minor</span> <b>9 tap targets are too small</b> <span class="muted">· mobile · mobile</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/" target="_blank" rel="noopener">http://localhost:4321/</a></div>
+        
+        <p>💡 Make buttons/links at least 44×44px so thumbs can hit them.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="minor" data-cat="mobile">
+      <summary><span class="pill" style="background:#ca8a04">minor</span> <b>6 tap targets are too small</b> <span class="muted">· mobile · mobile</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/about" target="_blank" rel="noopener">http://localhost:4321/about</a></div>
+        
+        <p>💡 Make buttons/links at least 44×44px so thumbs can hit them.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="minor" data-cat="mobile">
+      <summary><span class="pill" style="background:#ca8a04">minor</span> <b>6 tap targets are too small</b> <span class="muted">· mobile · mobile</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/products" target="_blank" rel="noopener">http://localhost:4321/products</a></div>
+        
+        <p>💡 Make buttons/links at least 44×44px so thumbs can hit them.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="minor" data-cat="mobile">
+      <summary><span class="pill" style="background:#ca8a04">minor</span> <b>8 tap targets are too small</b> <span class="muted">· mobile · mobile</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/contact" target="_blank" rel="noopener">http://localhost:4321/contact</a></div>
+        
+        <p>💡 Make buttons/links at least 44×44px so thumbs can hit them.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="minor" data-cat="mobile">
+      <summary><span class="pill" style="background:#ca8a04">minor</span> <b>9 tap targets are too small</b> <span class="muted">· mobile · mobile</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/login" target="_blank" rel="noopener">http://localhost:4321/login</a></div>
+        
+        <p>💡 Make buttons/links at least 44×44px so thumbs can hit them.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="minor" data-cat="mobile">
+      <summary><span class="pill" style="background:#ca8a04">minor</span> <b>10 tap targets are too small</b> <span class="muted">· mobile · mobile</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/signup" target="_blank" rel="noopener">http://localhost:4321/signup</a></div>
+        
+        <p>💡 Make buttons/links at least 44×44px so thumbs can hit them.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="minor" data-cat="accessibility">
+      <summary><span class="pill" style="background:#ca8a04">minor</span> <b>3 elements have no visible focus outline</b> <span class="muted">· accessibility · keyboard</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/" target="_blank" rel="noopener">http://localhost:4321/</a></div>
+        
+        <p>💡 Don&#39;t remove outline in CSS; add a clear :focus-visible style so keyboard users see where they are.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="info" data-cat="polish">
+      <summary><span class="pill" style="background:#64748b">info</span> <b>No favicon</b> <span class="muted">· polish · explorer, mobile, keyboard</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/" target="_blank" rel="noopener">http://localhost:4321/</a></div>
+        
+        <p>💡 Add a favicon so the site is recognisable in tabs and bookmarks.</p>
+        
+      </div>
+    </details>
+    <details class="issue" data-sev="info" data-cat="accessibility">
+      <summary><span class="pill" style="background:#64748b">info</span> <b>Heading levels skip</b> <span class="muted">· accessibility · explorer, mobile, keyboard</span></summary>
+      <div class="body">
+        <div class="muted">Page: <a href="http://localhost:4321/products" target="_blank" rel="noopener">http://localhost:4321/products</a></div>
+        <pre>1 jump(s), e.g. H1 → H3.</pre>
+        <p>💡 Keep heading levels in order for screen-reader users.</p>
+        
+      </div>
+    </details></div>
+<h2>What works (35)</h2>
+<ul class="passes"><li>✅ Has a page title <span class="muted">— /</span></li><li>✅ Has one clear H1 heading <span class="muted">— /</span></li><li>✅ Has a page title <span class="muted">— /about</span></li><li>✅ Has one clear H1 heading <span class="muted">— /about</span></li><li>✅ Has a page title <span class="muted">— /products</span></li><li>✅ Has one clear H1 heading <span class="muted">— /products</span></li><li>✅ All images load <span class="muted">— /products</span></li><li>✅ Has a page title <span class="muted">— /contact</span></li><li>✅ Has one clear H1 heading <span class="muted">— /contact</span></li><li>✅ All images load <span class="muted">— /contact</span></li><li>✅ Has a page title <span class="muted">— /login</span></li><li>✅ Has one clear H1 heading <span class="muted">— /login</span></li><li>✅ All images load <span class="muted">— /login</span></li><li>✅ Has a page title <span class="muted">— /signup</span></li><li>✅ Has one clear H1 heading <span class="muted">— /signup</span></li><li>✅ All images load <span class="muted">— /signup</span></li><li>✅ &quot;Show more&quot; responds to clicks <span class="muted">— /</span></li><li>✅ &quot;Careers&quot; responds to clicks <span class="muted">— /about</span></li><li>✅ Empty sign-up is rejected <span class="muted">— /signup</span></li><li>✅ New user can sign up <span class="muted">— /signup</span></li><li>✅ Wrong password is rejected with a message <span class="muted">— /login</span></li><li>✅ Existing user can log in <span class="muted">— /login</span></li><li>✅ Fits phone screen width <span class="muted">— /</span></li><li>✅ Fits phone screen width <span class="muted">— /about</span></li><li>✅ Fits phone screen width <span class="muted">— /contact</span></li><li>✅ Fits phone screen width <span class="muted">— /login</span></li><li>✅ Fits phone screen width <span class="muted">— /signup</span></li><li>✅ 9 elements reachable by keyboard <span class="muted">— /</span></li><li>✅ Form #1 blocks empty submission <span class="muted">— /login</span></li><li>✅ Form #1 blocks empty submission <span class="muted">— /signup</span></li><li>✅ Loads in 1.7s on slow network <span class="muted">— /</span></li><li>✅ Loads in 1.7s on slow network <span class="muted">— /about</span></li><li>✅ Loads in 1.4s on slow network <span class="muted">— /products</span></li><li>✅ Loads in 1.4s on slow network <span class="muted">— /contact</span></li><li>✅ Back button works <span class="muted">— /about</span></li></ul>
+<h2>Virtual users</h2>
+<table><tr><th>User</th><th>Needs</th></tr><tr><td>Curious first-time visitor</td><td>Look around, open every page, click every link and button</td></tr><tr><td>New customer who wants an account</td><td>Find sign up, create an account, log out, log back in, edit profile</td></tr><tr><td>Phone user on the go</td><td>Use the site on a small screen with touch</td></tr><tr><td>Keyboard-only / accessibility user</td><td>Navigate with Tab and Enter only, needs labels and visible focus</td></tr><tr><td>Careless user who types messy data</td><td>Submits empty forms, wrong emails, very long text, emoji, script tags</td></tr><tr><td>Impatient user on slow internet</td><td>Slow 3G, double-clicks buttons, hits back/refresh</td></tr></table>
+<p class="muted">Generated by <a href="https://github.com/">Human Tester</a> — human texture testing for websites and apps built with AI.</p>
+</div>
+<script>
+document.querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.filters button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+ const f=b.dataset.f;document.querySelectorAll('.issue').forEach(el=>{
+  el.style.display = f==='all' || (f.startsWith('sev:')&&el.dataset.sev===f.slice(4)) || (f.startsWith('cat:')&&el.dataset.cat===f.slice(4)) ? '' : 'none';});});
+</script></body></html>
