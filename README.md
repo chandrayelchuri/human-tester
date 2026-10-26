@@ -1,25 +1,30 @@
 # Human Tester
 
-**Human-like tester for websites and apps built with AI.**
+**Acts as real end users to test websites and apps built with AI.**
 
-Human Tester sends a crowd of virtual users into your website. They don't just load pages — they behave like real people with different needs: they click every button, open every page, sign up for an account, log out, log back in, edit their profile, type messy data into forms, use a phone, use only a keyboard, and suffer slow internet. Then you get a clear report: **what works, what's broken, and what to improve.**
+Human Tester sends a crowd of virtual end users into your site — several at the same time. They behave like real people with different needs: they open every page, click every button, search, filter, sign up, log out and back in, use every page behind the login, create and edit things, upload files, reset their password, type messy data, use a phone, use only a keyboard, use Safari and Firefox, and suffer slow internet. Two separate customers check that they can't see each other's data. With an API key, an AI end-user reads each page like a person and tries to reach real goals on its own. Then you get a clear report: **what works, what's broken, and what to improve.**
 
-Built for sites made with Lovable, Replit, Bolt, v0, Cursor, Claude and other AI builders — where things *look* finished but buttons go nowhere, forms crash, and sign-up silently fails.
+Built for sites made with Lovable, Replit, Bolt, v0, Cursor, Claude and other AI builders — where things *look* finished but buttons go nowhere, forms crash, sign-up silently fails, and one customer can see another customer's data.
 
-![score](https://img.shields.io/badge/virtual%20users-6-4f46e5) ![license](https://img.shields.io/badge/license-MIT-green)
+![users](https://img.shields.io/badge/virtual%20users-11-4f46e5) ![license](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
-## The virtual users
+## The virtual end users
 
 | User | What they need | What they test |
 |---|---|---|
-| 🧭 **Explorer** | Look around | Crawls every page, clicks every button/toggle/menu, broken links & images, JS errors, dead buttons |
-| 🙋 **New customer** | Get an account | Finds *Sign up*, tries an empty form, creates a real account, logs out, wrong password, logs in, refreshes, edits profile and checks it saved |
+| 🧭 **Explorer** | Look around | Crawls every page, clicks every button/toggle/menu, **search** (real words, nonsense, odd characters), **filters, sorting, pagination**, broken links & images, JS errors, dead buttons |
+| 🙋 **New customer → regular user** | Get an account and use the app | Sign-up incl. **multi-step onboarding**, empty-form check, logs out, wrong password, logs in, refresh, **crawls & clicks every page behind the login**, **creates something and edits it**, **uploads files** (normal, 12 MB, .exe), edits profile, **forgot password** |
+| 🔒 **Two customers + a stranger** | Privacy | User A signs up and creates data; **user B and a logged-out visitor must not see it** — catches the #1 bug in AI-built apps |
+| 👥 **Crowd** | Many people at once | 5+ users browse and **sign up simultaneously** — crashes, slowdowns, failed sign-ups |
 | 📱 **Phone user** | Use it on mobile | iPhone-size screen, sideways scrolling, tiny buttons, tiny text, viewport tag |
 | ⌨️ **Keyboard user** | Accessibility | Tab-only navigation, focus traps, visible focus, labels, alt text, heading order |
-| 🤪 **Messy user** | Types anything | Empty forms, bad emails, 5,000-char text, emoji, `<script>` (XSS), SQL-like input — catches crashes and injection |
-| 🐢 **Impatient user** | Slow internet | Throttled network load times, page weight, Back button, refresh errors |
+| 🤪 **Messy user** | Types anything | Empty forms, bad emails, 5,000-char text, emoji, `<script>` (XSS), SQL-like input |
+| 🐢 **Impatient user** | Slow internet | Throttled load times, page weight, Back button, refresh errors |
+| 🧭 **Safari user** | iPhone/Mac browser | Every page in the Safari (WebKit) engine — blank pages, errors |
+| 🦊 **Firefox user** | Firefox | Every page in Firefox |
+| 🤖 **AI end-user** | Real goals | Reads each page like a person and tries to *achieve* goals (sign up, book, buy with test data, post…) without being told how; reports where it got confused. Needs `ANTHROPIC_API_KEY` |
 
 ## What you get
 
@@ -30,14 +35,14 @@ A folder with:
 - `report.json` / `summary.json` — machine-readable, for dashboards
 - `shots/` — screenshots of failures
 
-Set `ANTHROPIC_API_KEY` and the report also gets an **AI review**: what's working, what to fix first (with prompts you can paste back into your AI builder), and UX improvement ideas.
+Set `ANTHROPIC_API_KEY` to turn on the AI end-user, and the report also gets an **AI review**: what's working, what to fix first (with prompts you can paste back into your AI builder), and UX improvement ideas.
 
 ## Quick start
 
 ```bash
 git clone https://github.com/chandrayelchuri/human-tester && cd human-tester
 npm install
-npx playwright install chromium
+npx playwright install chromium firefox webkit
 
 node bin/human-tester.js https://your-site.com
 open human-tester-report/index.html
@@ -50,6 +55,8 @@ Options:
 --max-pages 40                      # crawl limit
 --login-email you@x.com --login-password ...   # test with an existing account
 --signup-url /register --login-url /signin      # if links are hidden
+--crowd 10        # simultaneous users for the crowd test (default 5)
+--goals "Book a cleaning appointment|Post a classified ad"   # goals for the AI end-user
 --unsafe          # ALSO click delete / pay / checkout (only on test/staging sites!)
 --headed          # watch the browser do it
 --fail-under 70   # exit 1 for CI if score < 70
@@ -59,11 +66,11 @@ Options:
 ### Try it on the bundled buggy demo
 
 ```bash
-node demo/server.js &      # a tiny shop with 14 planted bugs
+node demo/server.js &      # a tiny shop with ~20 planted bugs
 node bin/human-tester.js http://localhost:4321 --out reports/demo
 ```
 
-It finds the server crash, the XSS hole, the profile that never saves, the dead "Subscribe" button, the JS error on "Open cart", the 404 link, broken images, "Lorem ipsum", sideways scrolling on phones and more. See [`reports/demo/report.md`](reports/demo/report.md).
+It finds the server crash, the XSS hole, **one user's notes visible to other users and to logged-out visitors**, the 12 MB upload crash, the sort dropdown that does nothing, the profile that never saves, the dead "Subscribe" button, the JS error on "Open cart", the 404 link, broken images, "Lorem ipsum", sideways scrolling on phones and more. See [`reports/demo/report.md`](reports/demo/report.md).
 
 ## Use it in GitHub Actions
 
@@ -98,7 +105,7 @@ Then drop [`dashboard/widget.html`](dashboard/widget.html) into your admin page:
 
 ## How it decides
 
-- **Critical** — server crashes (5xx), XSS, wrong password accepted, sign-up/log-in impossible
+- **Critical** — server crashes (5xx), XSS, one user's data visible to others, wrong password accepted, sign-up/log-in impossible, errors under simultaneous use
 - **Major** — JS errors, 404s, broken images, unsaved edits, missing labels, sideways scrolling, placeholder text
 - **Minor** — dead buttons, small tap targets, slow pages, missing alt text, focus outlines
 - **Info** — favicon, heading order, nice-to-haves
@@ -114,9 +121,9 @@ Score = 100 × e^(−penalty/90), so a couple of serious bugs hurt a lot while a
 
 ## Roadmap
 
-- Multiple simultaneous users (load + race conditions)
+- Native iPhone/Android apps via Appium (today: mobile web and PWAs)
 - Visual regression (compare screenshots between runs)
-- Native mobile apps via Appium
 - Checkout flows with Stripe test cards on test-mode sites
+- Email verification via a test inbox
 
 MIT licensed.

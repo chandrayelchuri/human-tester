@@ -1,26 +1,36 @@
 {
   "meta": {
     "tool": "human-tester",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "url": "http://localhost:4321/",
-    "startedAt": "2026-10-25T22:27:57.088Z",
-    "finishedAt": "2026-10-25T22:30:19.254Z",
-    "durationSec": 142,
+    "startedAt": "2026-10-26T02:25:07.978Z",
+    "finishedAt": "2026-10-26T02:30:01.436Z",
+    "durationSec": 293,
     "personas": [
       {
         "id": "explorer",
         "label": "Curious first-time visitor",
-        "need": "Look around, open every page, click every link and button"
+        "need": "Look around, open every page, click every button, search, filter and sort"
       },
       {
         "id": "signup",
-        "label": "New customer who wants an account",
-        "need": "Find sign up, create an account, log out, log back in, edit profile"
+        "label": "New customer who becomes a regular user",
+        "need": "Sign up (incl. multi-step), log out & in, use every page behind the login, create and edit things, upload files, reset password, edit profile"
+      },
+      {
+        "id": "privacy",
+        "label": "Two different customers + a stranger",
+        "need": "User A's data must never be visible to user B or to someone who isn't logged in"
+      },
+      {
+        "id": "crowd",
+        "label": "Many people at the same time",
+        "need": "Several users browse and sign up simultaneously — no crashes, no big slowdown"
       },
       {
         "id": "mobile",
         "label": "Phone user on the go",
-        "need": "Use the site on a small screen with touch"
+        "need": "Use the site on a small touch screen"
       },
       {
         "id": "keyboard",
@@ -35,28 +45,43 @@
       {
         "id": "impatient",
         "label": "Impatient user on slow internet",
-        "need": "Slow 3G, double-clicks buttons, hits back/refresh"
+        "need": "Slow mobile data, Back button, refreshing pages"
+      },
+      {
+        "id": "safari",
+        "label": "Safari user (iPhone/Mac engine)",
+        "need": "Every page works in Safari, not just Chrome"
+      },
+      {
+        "id": "firefox",
+        "label": "Firefox user",
+        "need": "Every page works in Firefox"
+      },
+      {
+        "id": "ai",
+        "label": "AI end-user with real goals",
+        "need": "Reads each page like a person and tries to achieve goals (sign up, buy, book, post…) without being told how; reports confusion"
       }
     ],
     "account": {
-      "email": "testhuman+mvoefr1n8564@example.com"
+      "email": "testhuman+mvomxshy9863@example.com"
     }
   },
-  "score": 39,
+  "score": 25,
   "counts": {
-    "critical": 2,
-    "major": 10,
-    "minor": 10,
-    "info": 2,
-    "passes": 35,
-    "pages": 8
+    "critical": 4,
+    "major": 19,
+    "minor": 12,
+    "info": 4,
+    "passes": 72,
+    "pages": 20
   },
   "journeys": [
     {
       "persona": "explorer",
       "journey": "explore",
       "status": "passed",
-      "detail": "Visited 7 page(s)"
+      "detail": "Visited 10 page(s)"
     },
     {
       "persona": "explorer",
@@ -65,16 +90,52 @@
       "detail": "Clicked 4 element(s), 1 did nothing"
     },
     {
+      "persona": "explorer",
+      "journey": "search",
+      "status": "passed",
+      "detail": "Searched \"Ceramic\", nonsense, and odd characters"
+    },
+    {
+      "persona": "explorer",
+      "journey": "filters",
+      "status": "passed",
+      "detail": "Tried 6 filter/sort/pagination control(s)"
+    },
+    {
       "persona": "signup",
       "journey": "signup",
       "status": "passed",
-      "detail": "Created account testhuman+mvoefr1n8564@example.com"
+      "detail": "Created account testhuman+mvomxshy9863@example.com"
     },
     {
       "persona": "signup",
       "journey": "login",
       "status": "passed",
-      "detail": "Logged in as testhuman+mvoefr1n8564@example.com"
+      "detail": "Logged in as testhuman+mvomxshy9863@example.com"
+    },
+    {
+      "persona": "signup",
+      "journey": "exploreLoggedIn",
+      "status": "passed",
+      "detail": "Visited 15 page(s), 8 only visible after login"
+    },
+    {
+      "persona": "signup",
+      "journey": "clickAllLoggedIn",
+      "status": "passed",
+      "detail": "Clicked 0 element(s), 0 did nothing"
+    },
+    {
+      "persona": "signup",
+      "journey": "crud",
+      "status": "passed",
+      "detail": "Created \"Item HTXSROXK\" via \"+ New note\" and tried editing it"
+    },
+    {
+      "persona": "signup",
+      "journey": "upload",
+      "status": "passed",
+      "detail": "Uploaded a normal file, a 12 MB file and a .exe on /profile"
     },
     {
       "persona": "signup",
@@ -83,10 +144,46 @@
       "detail": "Edit did not persist after reload"
     },
     {
+      "persona": "signup",
+      "journey": "forgotPassword",
+      "status": "passed",
+      "detail": "Requested a reset for a real and a fake email"
+    },
+    {
+      "persona": "privacy",
+      "journey": "signup",
+      "status": "passed",
+      "detail": "Created account testhuman+mvomzfs77299@example.com"
+    },
+    {
+      "persona": "privacy",
+      "journey": "crud",
+      "status": "passed",
+      "detail": "Created \"Item HTCU16GU\" via \"+ New note\" and tried editing it"
+    },
+    {
+      "persona": "privacy",
+      "journey": "signup",
+      "status": "passed",
+      "detail": "Created account testhuman+mvomzsfr4143@example.com"
+    },
+    {
+      "persona": "privacy",
+      "journey": "privacy",
+      "status": "failed",
+      "detail": "2 leak(s) of one user's data"
+    },
+    {
+      "persona": "crowd",
+      "journey": "crowd",
+      "status": "passed",
+      "detail": "5 users browsed and signed up simultaneously — 30 page loads, 0 server errors"
+    },
+    {
       "persona": "mobile",
       "journey": "explore",
       "status": "passed",
-      "detail": "Visited 7 page(s)"
+      "detail": "Visited 10 page(s)"
     },
     {
       "persona": "mobile",
@@ -104,7 +201,7 @@
       "persona": "keyboard",
       "journey": "keyboard",
       "status": "passed",
-      "detail": "Tabbed through 9 element(s)"
+      "detail": "Tabbed through 10 element(s)"
     },
     {
       "persona": "keyboard",
@@ -116,7 +213,7 @@
       "persona": "messy",
       "journey": "forms",
       "status": "passed",
-      "detail": "Submitted 24 messy form attempt(s)"
+      "detail": "Submitted 16 messy form attempt(s)"
     },
     {
       "persona": "impatient",
@@ -129,9 +226,49 @@
       "journey": "doubleClick",
       "status": "passed",
       "detail": "Back/refresh behaviour checked"
+    },
+    {
+      "persona": "safari",
+      "journey": "crossBrowser",
+      "status": "skipped",
+      "detail": "Safari engine not installed here (run: npx playwright install webkit)"
+    },
+    {
+      "persona": "firefox",
+      "journey": "crossBrowser",
+      "status": "skipped",
+      "detail": "Firefox engine not installed here (run: npx playwright install firefox)"
+    },
+    {
+      "persona": "ai",
+      "journey": "aiAgent",
+      "status": "skipped",
+      "detail": "Set ANTHROPIC_API_KEY to let an AI end-user explore with its own goals"
     }
   ],
   "issues": [
+    {
+      "severity": "critical",
+      "category": "security",
+      "personas": [
+        "privacy"
+      ],
+      "page": "http://localhost:4321/notes",
+      "title": "Private data visible to another logged-in user",
+      "detail": "User A's data (\"HTCU16GU\") was shown to another logged-in user at this URL.",
+      "suggestion": "Every database query must filter by the logged-in user (e.g. WHERE user_id = current user / Supabase Row Level Security), and private pages must require login."
+    },
+    {
+      "severity": "critical",
+      "category": "security",
+      "personas": [
+        "privacy"
+      ],
+      "page": "http://localhost:4321/notes/5",
+      "title": "Private data visible to a logged-out visitor",
+      "detail": "User A's data (\"HTCU16GU\") was shown to a logged-out visitor at this URL.",
+      "suggestion": "Every database query must filter by the logged-in user (e.g. WHERE user_id = current user / Supabase Row Level Security), and private pages must require login."
+    },
     {
       "severity": "critical",
       "category": "validation",
@@ -159,6 +296,7 @@
       "category": "broken",
       "personas": [
         "explorer",
+        "signup",
         "mobile",
         "keyboard"
       ],
@@ -172,6 +310,7 @@
       "category": "broken",
       "personas": [
         "explorer",
+        "signup",
         "mobile",
         "keyboard"
       ],
@@ -185,6 +324,7 @@
       "category": "content",
       "personas": [
         "explorer",
+        "signup",
         "mobile",
         "keyboard"
       ],
@@ -198,6 +338,7 @@
       "category": "accessibility",
       "personas": [
         "explorer",
+        "signup",
         "mobile",
         "keyboard"
       ],
@@ -211,6 +352,7 @@
       "category": "broken",
       "personas": [
         "explorer",
+        "signup",
         "mobile"
       ],
       "page": "http://localhost:4321/team",
@@ -241,7 +383,18 @@
       "title": "Clicking \"Open cart\" causes a JavaScript error",
       "detail": "openCart is not defined",
       "suggestion": "Open the browser console, click this element, and fix the error shown.",
-      "screenshot": "shots/explorer-click-error-1792967290321.png"
+      "screenshot": "shots/explorer-click-error-1792981524691.png"
+    },
+    {
+      "severity": "major",
+      "category": "upload",
+      "personas": [
+        "signup"
+      ],
+      "page": "http://localhost:4321/profile",
+      "title": "A 12 MB file crashes the upload",
+      "detail": "",
+      "suggestion": "Set a size limit and show \"File too large (max X MB)\" instead of crashing."
     },
     {
       "severity": "major",
@@ -251,9 +404,31 @@
       ],
       "page": "http://localhost:4321/profile",
       "title": "Profile changes are not saved",
-      "detail": "Changed a field to \"Editedefypp\", saved, reloaded — the old value came back.",
+      "detail": "Changed a field to \"Editedmz5g1\", saved, reloaded — the old value came back.",
       "suggestion": "Check the update API actually writes to the database and the page reads fresh data.",
-      "screenshot": "shots/signup-profile-fail-1792967312730.png"
+      "screenshot": "shots/signup-profile-fail-1792981644849.png"
+    },
+    {
+      "severity": "major",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/",
+      "title": "Page scrolls sideways on phones",
+      "detail": "Content is 531px wide on a 390px screen.",
+      "suggestion": "Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto."
+    },
+    {
+      "severity": "major",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/about",
+      "title": "Page scrolls sideways on phones",
+      "detail": "Content is 531px wide on a 390px screen.",
+      "suggestion": "Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto."
     },
     {
       "severity": "major",
@@ -268,12 +443,78 @@
     },
     {
       "severity": "major",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/contact",
+      "title": "Page scrolls sideways on phones",
+      "detail": "Content is 531px wide on a 390px screen.",
+      "suggestion": "Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto."
+    },
+    {
+      "severity": "major",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/login",
+      "title": "Page scrolls sideways on phones",
+      "detail": "Content is 531px wide on a 390px screen.",
+      "suggestion": "Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto."
+    },
+    {
+      "severity": "major",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/signup",
+      "title": "Page scrolls sideways on phones",
+      "detail": "Content is 531px wide on a 390px screen.",
+      "suggestion": "Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto."
+    },
+    {
+      "severity": "major",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/products?page=2",
+      "title": "Page scrolls sideways on phones",
+      "detail": "Content is 916px wide on a 390px screen.",
+      "suggestion": "Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto."
+    },
+    {
+      "severity": "major",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/forgot",
+      "title": "Page scrolls sideways on phones",
+      "detail": "Content is 531px wide on a 390px screen.",
+      "suggestion": "Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto."
+    },
+    {
+      "severity": "major",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/products?page=1",
+      "title": "Page scrolls sideways on phones",
+      "detail": "Content is 916px wide on a 390px screen.",
+      "suggestion": "Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto."
+    },
+    {
+      "severity": "major",
       "category": "validation",
       "personas": [
         "messy"
       ],
       "page": "http://localhost:4321/contact",
-      "title": "Form #1 accepts empty submission",
+      "title": "Form #2 accepts empty submission",
       "detail": "",
       "suggestion": "Mark required fields with `required` and validate on the server too."
     },
@@ -282,6 +523,7 @@
       "category": "accessibility",
       "personas": [
         "explorer",
+        "signup",
         "mobile",
         "keyboard"
       ],
@@ -295,6 +537,7 @@
       "category": "ux",
       "personas": [
         "explorer",
+        "signup",
         "mobile",
         "keyboard"
       ],
@@ -317,34 +560,45 @@
     },
     {
       "severity": "minor",
+      "category": "ux",
+      "personas": [
+        "explorer"
+      ],
+      "page": "http://localhost:4321/products",
+      "title": "Filter/sort \"Sort products\" changes nothing",
+      "detail": "",
+      "suggestion": "Changing a filter or sort should visibly update the list."
+    },
+    {
+      "severity": "minor",
+      "category": "ux",
+      "personas": [
+        "explorer"
+      ],
+      "page": "http://localhost:4321/products?page=2",
+      "title": "Filter/sort \"Sort products\" changes nothing",
+      "detail": "",
+      "suggestion": "Changing a filter or sort should visibly update the list."
+    },
+    {
+      "severity": "minor",
+      "category": "ux",
+      "personas": [
+        "explorer"
+      ],
+      "page": "http://localhost:4321/products?page=1",
+      "title": "Filter/sort \"Sort products\" changes nothing",
+      "detail": "",
+      "suggestion": "Changing a filter or sort should visibly update the list."
+    },
+    {
+      "severity": "minor",
       "category": "mobile",
       "personas": [
         "mobile"
       ],
       "page": "http://localhost:4321/",
-      "title": "9 tap targets are too small",
-      "detail": "",
-      "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
-    },
-    {
-      "severity": "minor",
-      "category": "mobile",
-      "personas": [
-        "mobile"
-      ],
-      "page": "http://localhost:4321/about",
-      "title": "6 tap targets are too small",
-      "detail": "",
-      "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
-    },
-    {
-      "severity": "minor",
-      "category": "mobile",
-      "personas": [
-        "mobile"
-      ],
-      "page": "http://localhost:4321/products",
-      "title": "6 tap targets are too small",
+      "title": "5 tap targets are too small",
       "detail": "",
       "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
     },
@@ -355,7 +609,7 @@
         "mobile"
       ],
       "page": "http://localhost:4321/contact",
-      "title": "8 tap targets are too small",
+      "title": "4 tap targets are too small",
       "detail": "",
       "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
     },
@@ -366,7 +620,7 @@
         "mobile"
       ],
       "page": "http://localhost:4321/login",
-      "title": "9 tap targets are too small",
+      "title": "5 tap targets are too small",
       "detail": "",
       "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
     },
@@ -377,7 +631,18 @@
         "mobile"
       ],
       "page": "http://localhost:4321/signup",
-      "title": "10 tap targets are too small",
+      "title": "6 tap targets are too small",
+      "detail": "",
+      "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
+    },
+    {
+      "severity": "minor",
+      "category": "mobile",
+      "personas": [
+        "mobile"
+      ],
+      "page": "http://localhost:4321/forgot",
+      "title": "4 tap targets are too small",
       "detail": "",
       "suggestion": "Make buttons/links at least 44×44px so thumbs can hit them."
     },
@@ -397,6 +662,7 @@
       "category": "polish",
       "personas": [
         "explorer",
+        "signup",
         "mobile",
         "keyboard"
       ],
@@ -410,10 +676,37 @@
       "category": "accessibility",
       "personas": [
         "explorer",
+        "signup",
         "mobile",
         "keyboard"
       ],
       "page": "http://localhost:4321/products",
+      "title": "Heading levels skip",
+      "detail": "1 jump(s), e.g. H1 → H3.",
+      "suggestion": "Keep heading levels in order for screen-reader users."
+    },
+    {
+      "severity": "info",
+      "category": "accessibility",
+      "personas": [
+        "explorer",
+        "signup",
+        "mobile"
+      ],
+      "page": "http://localhost:4321/products?page=2",
+      "title": "Heading levels skip",
+      "detail": "1 jump(s), e.g. H1 → H3.",
+      "suggestion": "Keep heading levels in order for screen-reader users."
+    },
+    {
+      "severity": "info",
+      "category": "accessibility",
+      "personas": [
+        "explorer",
+        "signup",
+        "mobile"
+      ],
+      "page": "http://localhost:4321/products?page=1",
       "title": "Heading levels skip",
       "detail": "1 jump(s), e.g. H1 → H3.",
       "suggestion": "Keep heading levels in order for screen-reader users."
@@ -517,6 +810,60 @@
       "title": "All images load"
     },
     {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/products?page=2",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/products?page=2",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "explorer",
+      "page": "http://localhost:4321/products?page=2",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/forgot",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/forgot",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "explorer",
+      "page": "http://localhost:4321/forgot",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/products?page=1",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "explorer",
+      "page": "http://localhost:4321/products?page=1",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "explorer",
+      "page": "http://localhost:4321/products?page=1",
+      "title": "All images load"
+    },
+    {
       "category": "interaction",
       "persona": "explorer",
       "page": "http://localhost:4321/",
@@ -527,6 +874,30 @@
       "persona": "explorer",
       "page": "http://localhost:4321/about",
       "title": "\"Careers\" responds to clicks"
+    },
+    {
+      "category": "search",
+      "persona": "explorer",
+      "page": "http://localhost:4321/",
+      "title": "Search finds \"Ceramic\""
+    },
+    {
+      "category": "interaction",
+      "persona": "explorer",
+      "page": "http://localhost:4321/",
+      "title": "Pagination works"
+    },
+    {
+      "category": "interaction",
+      "persona": "explorer",
+      "page": "http://localhost:4321/products",
+      "title": "Pagination works"
+    },
+    {
+      "category": "interaction",
+      "persona": "explorer",
+      "page": "http://localhost:4321/products?page=1",
+      "title": "Pagination works"
     },
     {
       "category": "validation",
@@ -553,52 +924,196 @@
       "title": "Existing user can log in"
     },
     {
-      "category": "mobile",
-      "persona": "mobile",
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/profile",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/profile",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "signup",
+      "page": "http://localhost:4321/profile",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/new",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/new",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/new",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/1",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/1",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/1",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/2",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/2",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/2",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/3",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/3",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/3",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/1/edit",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/1/edit",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/1/edit",
+      "title": "All images load"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/2/edit",
+      "title": "Has a page title"
+    },
+    {
+      "category": "seo",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/2/edit",
+      "title": "Has one clear H1 heading"
+    },
+    {
+      "category": "broken",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes/2/edit",
+      "title": "All images load"
+    },
+    {
+      "category": "journey",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes",
+      "title": "User can create content (\"+ New note\")"
+    },
+    {
+      "category": "journey",
+      "persona": "signup",
+      "page": "http://localhost:4321/notes",
+      "title": "User can edit what they created"
+    },
+    {
+      "category": "upload",
+      "persona": "signup",
+      "page": "http://localhost:4321/profile",
+      "title": "Uploading photo.png works"
+    },
+    {
+      "category": "journey",
+      "persona": "signup",
+      "page": "http://localhost:4321/forgot",
+      "title": "Forgot-password sends a reset message"
+    },
+    {
+      "category": "load",
+      "persona": "crowd",
       "page": "http://localhost:4321/",
-      "title": "Fits phone screen width"
+      "title": "Handles 5 simultaneous users (slowest 1.2s)"
     },
     {
-      "category": "mobile",
-      "persona": "mobile",
-      "page": "http://localhost:4321/about",
-      "title": "Fits phone screen width"
-    },
-    {
-      "category": "mobile",
-      "persona": "mobile",
-      "page": "http://localhost:4321/contact",
-      "title": "Fits phone screen width"
-    },
-    {
-      "category": "mobile",
-      "persona": "mobile",
-      "page": "http://localhost:4321/login",
-      "title": "Fits phone screen width"
-    },
-    {
-      "category": "mobile",
-      "persona": "mobile",
+      "category": "load",
+      "persona": "crowd",
       "page": "http://localhost:4321/signup",
-      "title": "Fits phone screen width"
+      "title": "5 people signed up at the same moment"
     },
     {
       "category": "accessibility",
       "persona": "keyboard",
       "page": "http://localhost:4321/",
-      "title": "9 elements reachable by keyboard"
+      "title": "10 elements reachable by keyboard"
     },
     {
       "category": "validation",
       "persona": "messy",
       "page": "http://localhost:4321/login",
-      "title": "Form #1 blocks empty submission"
-    },
-    {
-      "category": "validation",
-      "persona": "messy",
-      "page": "http://localhost:4321/signup",
-      "title": "Form #1 blocks empty submission"
+      "title": "Form #2 blocks empty submission"
     },
     {
       "category": "performance",
@@ -637,97 +1152,248 @@
       "personas": [
         "explorer",
         "signup",
+        "privacy",
+        "crowd",
         "mobile",
         "keyboard",
+        "messy",
         "impatient"
       ],
       "status": 200,
-      "loadMs": 1125,
+      "loadMs": 1162,
       "title": "Demo Shop",
-      "forms": 0
+      "forms": 1
     },
     {
       "url": "http://localhost:4321/about",
       "personas": [
         "explorer",
+        "signup",
+        "crowd",
         "mobile",
         "keyboard",
+        "messy",
         "impatient"
       ],
       "status": 200,
-      "loadMs": 1127,
+      "loadMs": 1125,
       "title": "About",
-      "forms": 0
+      "forms": 1
     },
     {
       "url": "http://localhost:4321/products",
       "personas": [
         "explorer",
+        "signup",
+        "crowd",
         "mobile",
         "keyboard",
+        "messy",
         "impatient"
       ],
       "status": 200,
-      "loadMs": 1121,
+      "loadMs": 1125,
       "title": "Products",
-      "forms": 0
+      "forms": 1
     },
     {
       "url": "http://localhost:4321/contact",
       "personas": [
         "explorer",
+        "signup",
+        "crowd",
         "mobile",
         "keyboard",
         "messy",
         "impatient"
       ],
       "status": 200,
-      "loadMs": 1123,
+      "loadMs": 1125,
       "title": "Contact",
-      "forms": 1
+      "forms": 2
     },
     {
       "url": "http://localhost:4321/login",
       "personas": [
         "explorer",
+        "signup",
+        "crowd",
         "mobile",
         "keyboard",
         "messy",
         "impatient"
       ],
       "status": 200,
-      "loadMs": 1116,
+      "loadMs": 1127,
       "title": "Log in",
-      "forms": 1
+      "forms": 2
     },
     {
       "url": "http://localhost:4321/signup",
       "personas": [
         "explorer",
-        "mobile",
-        "messy"
+        "crowd",
+        "mobile"
       ],
       "status": 200,
-      "loadMs": 1119,
+      "loadMs": 1126,
       "title": "Sign up",
-      "forms": 1
+      "forms": 2
     },
     {
       "url": "http://localhost:4321/team",
       "personas": [
         "explorer",
+        "signup",
         "mobile"
       ],
       "status": 404,
-      "loadMs": 1119
+      "loadMs": 1120
+    },
+    {
+      "url": "http://localhost:4321/products?page=2",
+      "personas": [
+        "explorer",
+        "signup",
+        "crowd",
+        "mobile"
+      ],
+      "status": 200,
+      "loadMs": 1123,
+      "title": "Products",
+      "forms": 1
+    },
+    {
+      "url": "http://localhost:4321/forgot",
+      "personas": [
+        "explorer",
+        "signup",
+        "crowd",
+        "mobile"
+      ],
+      "status": 200,
+      "loadMs": 1125,
+      "title": "Reset password",
+      "forms": 2
+    },
+    {
+      "url": "http://localhost:4321/products?page=1",
+      "personas": [
+        "explorer",
+        "signup",
+        "crowd",
+        "mobile"
+      ],
+      "status": 200,
+      "loadMs": 1125,
+      "title": "Products",
+      "forms": 1
+    },
+    {
+      "url": "http://localhost:4321/notes",
+      "personas": [
+        "signup",
+        "privacy",
+        "crowd"
+      ],
+      "status": 200,
+      "loadMs": 1241,
+      "title": "My notes",
+      "forms": 1
     },
     {
       "url": "http://localhost:4321/profile",
+      "personas": [
+        "signup",
+        "privacy",
+        "crowd"
+      ],
+      "status": 200,
+      "loadMs": 1143,
+      "title": "My account",
+      "forms": 3
+    },
+    {
+      "url": "http://localhost:4321/notes/new",
+      "personas": [
+        "signup",
+        "crowd"
+      ],
+      "status": 200,
+      "loadMs": 1197,
+      "title": "New note",
+      "forms": 2
+    },
+    {
+      "url": "http://localhost:4321/notes/1",
+      "personas": [
+        "signup",
+        "crowd"
+      ],
+      "status": 200,
+      "loadMs": 1182,
+      "title": "Item HTKVXUHD",
+      "forms": 1
+    },
+    {
+      "url": "http://localhost:4321/notes/2",
+      "personas": [
+        "signup",
+        "crowd"
+      ],
+      "status": 200,
+      "loadMs": 1199,
+      "title": "Item HT04LXSA",
+      "forms": 1
+    },
+    {
+      "url": "http://localhost:4321/notes/3",
+      "personas": [
+        "signup",
+        "crowd"
+      ],
+      "status": 200,
+      "loadMs": 1153,
+      "title": "Item HT4L24MY",
+      "forms": 1
+    },
+    {
+      "url": "http://localhost:4321/notes/1/edit",
+      "personas": [
+        "signup",
+        "crowd"
+      ],
+      "status": 200,
+      "loadMs": 1200,
+      "title": "Edit note",
+      "forms": 2
+    },
+    {
+      "url": "http://localhost:4321/notes/2/edit",
+      "personas": [
+        "signup",
+        "crowd"
+      ],
+      "status": 200,
+      "loadMs": 1153,
+      "title": "Edit note",
+      "forms": 2
+    },
+    {
+      "url": "http://localhost:4321/notes/4",
       "personas": [
         "signup"
       ],
       "status": 200,
       "loadMs": 1124
+    },
+    {
+      "url": "http://localhost:4321/notes/5",
+      "personas": [
+        "privacy"
+      ],
+      "status": 200,
+      "loadMs": 1132
     }
   ],
   "ai": null

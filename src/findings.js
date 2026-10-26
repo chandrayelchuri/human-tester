@@ -45,7 +45,14 @@ export class Findings {
   score() {
     // diminishing penalty: a few bad bugs hurt a lot, a long tail of nits doesn't zero the score
     const w = { critical: 12, major: 4, minor: 1, info: 0 };
-    const penalty = this.issues.reduce((s, i) => s + (w[i.severity] || 0), 0)
+    // the same problem repeated on many pages counts fully once, then 25% per extra page
+    const seenTitle = new Set();
+    const penalty = this.issues.reduce((s, i) => {
+      const k = i.severity + i.title.replace(/\d+/g, 'N');
+      const first = !seenTitle.has(k);
+      seenTitle.add(k);
+      return s + (w[i.severity] || 0) * (first ? 1 : 0.25);
+    }, 0)
       + this.journeys.filter((j) => j.status === 'failed').length * 10;
     return Math.round(100 * Math.exp(-penalty / 90));
   }

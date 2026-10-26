@@ -1,5 +1,5 @@
 name: 'Human Tester'
-description: 'Human-like tester for websites and apps built with AI — virtual users test every page, button, sign-up, login and form.'
+description: 'Acts as real end users to test websites and apps built with AI — every page, button, sign-up, login, form, upload and search.'
 branding:
   icon: 'users'
   color: 'purple'
@@ -19,8 +19,11 @@ inputs:
     default: ''
   login-password:
     default: ''
+  goals:
+    description: 'Optional goals for the AI end-user, separated by |'
+    default: ''
   anthropic-api-key:
-    description: 'Optional — adds an AI-written improvement plan'
+    description: 'Optional — turns on the AI end-user and an AI-written improvement plan'
     default: ''
 outputs:
   score:
@@ -33,13 +36,14 @@ runs:
       with: { node-version: '20' }
     - shell: bash
       run: |
-        cd "${{ github.action_path }}" && npm install --omit=dev && npx playwright install --with-deps chromium
+        cd "${{ github.action_path }}" && npm install --omit=dev && npx playwright install --with-deps chromium firefox webkit
     - id: run
       shell: bash
       env:
         ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
         HT_LOGIN_EMAIL: ${{ inputs.login-email }}
         HT_LOGIN_PASSWORD: ${{ inputs.login-password }}
+        HT_GOALS: ${{ inputs.goals }}
       run: |
         node "${{ github.action_path }}/bin/human-tester.js" "${{ inputs.url }}" --personas "${{ inputs.personas }}" --max-pages "${{ inputs.max-pages }}" --out human-tester-report
         echo "score=$(node -p "require('./human-tester-report/summary.json').score")" >> "$GITHUB_OUTPUT"

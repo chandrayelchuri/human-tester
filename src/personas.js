@@ -1,24 +1,36 @@
-// Each persona is a different kind of real human with different needs.
-// Personas drive viewport, input style, test data, and which journeys they attempt.
+// Each persona is a different kind of real end user with different needs.
+// Personas drive browser, viewport, input style, test data, and which journeys they attempt.
 
 const stamp = () => Date.now().toString(36) + Math.floor(Math.random() * 1e4);
 
 export const PERSONAS = {
   explorer: {
     label: 'Curious first-time visitor',
-    need: 'Look around, open every page, click every link and button',
+    need: 'Look around, open every page, click every button, search, filter and sort',
     viewport: { width: 1366, height: 800 },
-    journeys: ['explore', 'clickAll'],
+    journeys: ['explore', 'clickAll', 'search', 'filters'],
   },
   signup: {
-    label: 'New customer who wants an account',
-    need: 'Find sign up, create an account, log out, log back in, edit profile',
+    label: 'New customer who becomes a regular user',
+    need: 'Sign up (incl. multi-step), log out & in, use every page behind the login, create and edit things, upload files, reset password, edit profile',
     viewport: { width: 1440, height: 900 },
-    journeys: ['signup', 'login', 'editProfile'],
+    journeys: ['signup', 'login', 'exploreLoggedIn', 'clickAllLoggedIn', 'crud', 'upload', 'editProfile', 'forgotPassword'],
+  },
+  privacy: {
+    label: 'Two different customers + a stranger',
+    need: "User A's data must never be visible to user B or to someone who isn't logged in",
+    viewport: { width: 1280, height: 800 },
+    journeys: ['privacy'],
+  },
+  crowd: {
+    label: 'Many people at the same time',
+    need: 'Several users browse and sign up simultaneously — no crashes, no big slowdown',
+    viewport: { width: 1280, height: 800 },
+    journeys: ['crowd'],
   },
   mobile: {
     label: 'Phone user on the go',
-    need: 'Use the site on a small screen with touch',
+    need: 'Use the site on a small touch screen',
     viewport: { width: 390, height: 844 },
     isMobile: true,
     hasTouch: true,
@@ -40,10 +52,32 @@ export const PERSONAS = {
   },
   impatient: {
     label: 'Impatient user on slow internet',
-    need: 'Slow 3G, double-clicks buttons, hits back/refresh',
+    need: 'Slow mobile data, Back button, refreshing pages',
     viewport: { width: 1280, height: 800 },
     slowNetwork: true,
     journeys: ['performance', 'doubleClick'],
+  },
+  safari: {
+    label: 'Safari user (iPhone/Mac engine)',
+    need: 'Every page works in Safari, not just Chrome',
+    browser: 'webkit',
+    browserLabel: 'Safari',
+    viewport: { width: 1280, height: 800 },
+    journeys: ['crossBrowser'],
+  },
+  firefox: {
+    label: 'Firefox user',
+    need: 'Every page works in Firefox',
+    browser: 'firefox',
+    browserLabel: 'Firefox',
+    viewport: { width: 1280, height: 800 },
+    journeys: ['crossBrowser'],
+  },
+  ai: {
+    label: 'AI end-user with real goals',
+    need: 'Reads each page like a person and tries to achieve goals (sign up, buy, book, post…) without being told how; reports confusion',
+    viewport: { width: 1366, height: 850 },
+    journeys: ['aiAgent'],
   },
 };
 

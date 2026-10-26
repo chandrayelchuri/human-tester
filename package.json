@@ -1,8 +1,8 @@
 {
   "name": "human-tester",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": { "type": "git", "url": "https://github.com/chandrayelchuri/human-tester" },
-  "description": "Human-like tester for websites and apps built with AI. Simulates many real users who click everything, sign up, log in, edit, and report what works, what breaks, and what to improve.",
+  "description": "Human Tester acts as real end users to test websites and apps built with AI — many users at once, every page, button, sign-up, login, form, upload and search, then reports what works, what breaks and what to improve.",
   "type": "module",
   "bin": {
     "human-tester": "bin/human-tester.js"

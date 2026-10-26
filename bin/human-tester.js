@@ -4,7 +4,7 @@ import { testSite } from '../src/index.js';
 import { PERSONAS } from '../src/personas.js';
 
 const HELP = `
-Human Tester — human-like tester for websites & apps built with AI.
+Human Tester — acts as real end users to test websites and apps built with AI.
 
 Usage:
   human-tester <url> [options]
@@ -18,13 +18,16 @@ Options:
   --login-password <pw>
   --signup-url <path>      where the sign-up form lives, if not linked in the header
   --login-url <path>       where the log-in form lives
+  --crowd <n>              how many simultaneous users the "crowd" persona uses (default 5)
+  --goals "a|b"            goals for the AI end-user, separated by |  (needs ANTHROPIC_API_KEY)
+  --ai-steps <n>           max steps per AI goal (default 20)
   --unsafe                 also click delete/pay/checkout buttons (ONLY on test environments)
   --headed                 watch the browser
   --no-screenshots
   --fail-under <score>     exit code 1 if score is below this (for CI)
   --config <file>          JSON file with any of the options above
 
-Set ANTHROPIC_API_KEY to add an AI-written improvement plan to the report.
+Set ANTHROPIC_API_KEY to turn on the AI end-user persona and an AI-written improvement plan.
 
 Only test sites you own or have permission to test.
 `;
@@ -64,6 +67,9 @@ if (pos[0] === 'serve') {
     signupUrl: o.signupUrl || cfg.signupUrl,
     loginUrl: o.loginUrl || cfg.loginUrl,
     unsafe: !!(o.unsafe || cfg.unsafe),
+    crowd: Number(o.crowd || cfg.crowd || 5),
+    goals: (o.goals || process.env.HT_GOALS) ? (o.goals || process.env.HT_GOALS).split('|').map((g) => g.trim()).filter(Boolean) : cfg.goals,
+    aiSteps: Number(o.aiSteps || cfg.aiSteps || 20),
     headless: !o.headed,
     screenshots: !o.noScreenshots,
   };

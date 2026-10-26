@@ -1,21 +1,21 @@
 {
   "url": "http://localhost:4321/",
-  "score": 39,
+  "score": 25,
   "counts": {
-    "critical": 2,
-    "major": 10,
-    "minor": 10,
-    "info": 2,
-    "passes": 35,
-    "pages": 8
+    "critical": 4,
+    "major": 19,
+    "minor": 12,
+    "info": 4,
+    "passes": 72,
+    "pages": 20
   },
-  "finishedAt": "2026-10-25T22:30:19.254Z",
+  "finishedAt": "2026-10-26T02:30:01.436Z",
   "journeys": [
     {
       "persona": "explorer",
       "journey": "explore",
       "status": "passed",
-      "detail": "Visited 7 page(s)"
+      "detail": "Visited 10 page(s)"
     },
     {
       "persona": "explorer",
@@ -24,16 +24,52 @@
       "detail": "Clicked 4 element(s), 1 did nothing"
     },
     {
+      "persona": "explorer",
+      "journey": "search",
+      "status": "passed",
+      "detail": "Searched \"Ceramic\", nonsense, and odd characters"
+    },
+    {
+      "persona": "explorer",
+      "journey": "filters",
+      "status": "passed",
+      "detail": "Tried 6 filter/sort/pagination control(s)"
+    },
+    {
       "persona": "signup",
       "journey": "signup",
       "status": "passed",
-      "detail": "Created account testhuman+mvoefr1n8564@example.com"
+      "detail": "Created account testhuman+mvomxshy9863@example.com"
     },
     {
       "persona": "signup",
       "journey": "login",
       "status": "passed",
-      "detail": "Logged in as testhuman+mvoefr1n8564@example.com"
+      "detail": "Logged in as testhuman+mvomxshy9863@example.com"
+    },
+    {
+      "persona": "signup",
+      "journey": "exploreLoggedIn",
+      "status": "passed",
+      "detail": "Visited 15 page(s), 8 only visible after login"
+    },
+    {
+      "persona": "signup",
+      "journey": "clickAllLoggedIn",
+      "status": "passed",
+      "detail": "Clicked 0 element(s), 0 did nothing"
+    },
+    {
+      "persona": "signup",
+      "journey": "crud",
+      "status": "passed",
+      "detail": "Created \"Item HTXSROXK\" via \"+ New note\" and tried editing it"
+    },
+    {
+      "persona": "signup",
+      "journey": "upload",
+      "status": "passed",
+      "detail": "Uploaded a normal file, a 12 MB file and a .exe on /profile"
     },
     {
       "persona": "signup",
@@ -42,10 +78,46 @@
       "detail": "Edit did not persist after reload"
     },
     {
+      "persona": "signup",
+      "journey": "forgotPassword",
+      "status": "passed",
+      "detail": "Requested a reset for a real and a fake email"
+    },
+    {
+      "persona": "privacy",
+      "journey": "signup",
+      "status": "passed",
+      "detail": "Created account testhuman+mvomzfs77299@example.com"
+    },
+    {
+      "persona": "privacy",
+      "journey": "crud",
+      "status": "passed",
+      "detail": "Created \"Item HTCU16GU\" via \"+ New note\" and tried editing it"
+    },
+    {
+      "persona": "privacy",
+      "journey": "signup",
+      "status": "passed",
+      "detail": "Created account testhuman+mvomzsfr4143@example.com"
+    },
+    {
+      "persona": "privacy",
+      "journey": "privacy",
+      "status": "failed",
+      "detail": "2 leak(s) of one user's data"
+    },
+    {
+      "persona": "crowd",
+      "journey": "crowd",
+      "status": "passed",
+      "detail": "5 users browsed and signed up simultaneously — 30 page loads, 0 server errors"
+    },
+    {
       "persona": "mobile",
       "journey": "explore",
       "status": "passed",
-      "detail": "Visited 7 page(s)"
+      "detail": "Visited 10 page(s)"
     },
     {
       "persona": "mobile",
@@ -63,7 +135,7 @@
       "persona": "keyboard",
       "journey": "keyboard",
       "status": "passed",
-      "detail": "Tabbed through 9 element(s)"
+      "detail": "Tabbed through 10 element(s)"
     },
     {
       "persona": "keyboard",
@@ -75,7 +147,7 @@
       "persona": "messy",
       "journey": "forms",
       "status": "passed",
-      "detail": "Submitted 24 messy form attempt(s)"
+      "detail": "Submitted 16 messy form attempt(s)"
     },
     {
       "persona": "impatient",
@@ -88,9 +160,45 @@
       "journey": "doubleClick",
       "status": "passed",
       "detail": "Back/refresh behaviour checked"
+    },
+    {
+      "persona": "safari",
+      "journey": "crossBrowser",
+      "status": "skipped",
+      "detail": "Safari engine not installed here (run: npx playwright install webkit)"
+    },
+    {
+      "persona": "firefox",
+      "journey": "crossBrowser",
+      "status": "skipped",
+      "detail": "Firefox engine not installed here (run: npx playwright install firefox)"
+    },
+    {
+      "persona": "ai",
+      "journey": "aiAgent",
+      "status": "skipped",
+      "detail": "Set ANTHROPIC_API_KEY to let an AI end-user explore with its own goals"
     }
   ],
   "top": [
+    {
+      "title": "Private data visible to another logged-in user",
+      "suggestion": "Every database query must filter by the logged-in user (e.g. WHERE user_id = current user / Supabase Row Level Security), and private pages must require login.",
+      "severity": "critical",
+      "pages": [
+        "http://localhost:4321/notes"
+      ],
+      "weight": 4
+    },
+    {
+      "title": "Private data visible to a logged-out visitor",
+      "suggestion": "Every database query must filter by the logged-in user (e.g. WHERE user_id = current user / Supabase Row Level Security), and private pages must require login.",
+      "severity": "critical",
+      "pages": [
+        "http://localhost:4321/notes/5"
+      ],
+      "weight": 4
+    },
     {
       "title": "Form crashes the server with very long text input",
       "suggestion": "Validate and sanitise input on the server; return a friendly 400 error instead of crashing.",
@@ -110,32 +218,21 @@
       "weight": 4
     },
     {
-      "title": "Broken image(s)",
-      "suggestion": "Fix or remove the image URLs — users see empty boxes.",
+      "title": "Page scrolls sideways on phones",
+      "suggestion": "Find the element wider than the screen (often a table, image or fixed-width div) and add max-width:100% / overflow-x:auto.",
       "severity": "major",
       "pages": [
         "http://localhost:4321/",
-        "http://localhost:4321/about"
+        "http://localhost:4321/about",
+        "http://localhost:4321/products",
+        "http://localhost:4321/contact",
+        "http://localhost:4321/login",
+        "http://localhost:4321/signup",
+        "http://localhost:4321/products?page=2",
+        "http://localhost:4321/forgot",
+        "http://localhost:4321/products?page=1"
       ],
-      "weight": 6
-    },
-    {
-      "title": "Placeholder / unfinished text found",
-      "suggestion": "Replace dummy text before launch — it looks unfinished to real users. (Common in AI-generated sites.)",
-      "severity": "major",
-      "pages": [
-        "http://localhost:4321/about"
-      ],
-      "weight": 3
-    },
-    {
-      "title": "Form field(s) without a label",
-      "suggestion": "Add a visible <label for> to each field — placeholders disappear when typing and screen readers may skip them.",
-      "severity": "major",
-      "pages": [
-        "http://localhost:4321/contact"
-      ],
-      "weight": 3
+      "weight": 27
     }
   ]
 }

@@ -8,7 +8,7 @@ import {
 
 const CAPTCHA = 'iframe[src*="recaptcha"], iframe[src*="hcaptcha"], iframe[src*="turnstile"], .g-recaptcha, .h-captcha, .cf-turnstile';
 
-async function goto(ctx, url) {
+export async function goto(ctx, url) {
   const t0 = Date.now();
   const res = await ctx.page.goto(url, { waitUntil: 'domcontentloaded', timeout: ctx.opts.timeout }).catch((e) => ({ _err: e }));
   await settle(ctx.page);
@@ -25,7 +25,7 @@ async function goto(ctx, url) {
   return { status, ms };
 }
 
-async function shot(ctx, name) {
+export async function shot(ctx, name) {
   if (!ctx.opts.screenshots) return undefined;
   const file = `shots/${ctx.persona}-${name}-${Date.now()}.png`.replace(/[^a-zA-Z0-9/._-]/g, '_');
   await ctx.page.screenshot({ path: `${ctx.opts.out}/${file}`, fullPage: false }).catch(() => {});
@@ -33,9 +33,10 @@ async function shot(ctx, name) {
 }
 
 // ---------- explore: crawl like a curious visitor ----------
-export async function explore(ctx) {
+export async function explore(ctx, { loggedIn = false, start } = {}) {
   const { opts, state, F, persona } = ctx;
-  const queue = [opts.url];
+  const queue = [start || opts.url];
+  const into = loggedIn ? state.visitedAuthed : state.visited;
   const seen = new Set();
   while (queue.length && seen.size < opts.maxPages) {
     const url = queue.shift();
@@ -62,9 +63,10 @@ export async function explore(ctx) {
       if (!state.linkedFrom.has(abs)) state.linkedFrom.set(abs, url);
       if (!seen.has(abs)) queue.push(abs);
     }
-    state.visited.add(url);
+    into.add(url);
+    if (loggedIn && !state.visited.has(url)) state.privateUrls.add(url);
   }
-  F.journey(persona, 'explore', 'passed', `Visited ${seen.size} page(s)`);
+  F.journey(persona, loggedIn ? 'exploreLoggedIn' : 'explore', 'passed', `Visited ${seen.size} page(s)${loggedIn ? `, ${state.privateUrls.size} only visible after login` : ''}`);
 }
 
 // ---------- clickAll: press every button / link-button ----------
@@ -83,9 +85,9 @@ async function tagClickables(page) {
   });
 }
 
-export async function clickAll(ctx) {
+export async function clickAll(ctx, { urls, name = 'clickAll' } = {}) {
   const { opts, state, F, persona, page } = ctx;
-  const pages = [...state.visited].slice(0, opts.maxClickPages);
+  const pages = [...(urls || state.visited)].slice(0, opts.maxClickPages);
   let clicked = 0, dead = 0;
   for (const url of pages) {
     if (!(await goto(ctx, url))) continue;
@@ -127,7 +129,7 @@ export async function clickAll(ctx) {
       }
     }
   }
-  F.journey(persona, 'clickAll', 'passed', `Clicked ${clicked} element(s), ${dead} did nothing`);
+  F.journey(persona, name, 'passed', `Clicked ${clicked} element(s), ${dead} did nothing`);
 }
 
 // ---------- signup ----------
@@ -185,6 +187,21 @@ export async function signup(ctx) {
   const srvBefore = ctx.serverErrorCount;
   await submit.click().catch(() => {});
   await settle(page, 1000);
+  // multi-step sign-up / onboarding: keep filling "Next"/"Continue" steps like a person would
+  let steps = 1;
+  while (steps < 5 && !(await findByText(page, LOGOUT))) {
+    const nextForm = await page.$('form:visible');
+    if (!nextForm) break;
+    const empty = await nextForm.$$eval('input:not([type=hidden]):not([type=submit]):not([type=checkbox]):not([type=radio]), textarea, select', (els) => els.filter((e) => e.offsetParent && !e.value).length).catch(() => 0);
+    const btn = await findSubmit(nextForm);
+    const btnText = btn ? ((await btn.innerText().catch(() => '')) || (await btn.getAttribute('value')) || '') : '';
+    if (!btn || !empty || !/next|continue|finish|complete|done|save|submit|create|get started/i.test(btnText) || (await nextForm.$('input[type=password]'))) break;
+    await fillForm(nextForm, id);
+    await btn.click().catch(() => {});
+    await settle(page, 800);
+    steps++;
+  }
+  if (steps > 1) F.pass({ category: 'journey', persona, page: signupUrl, title: `Completed a ${steps}-step sign-up/onboarding` });
   const txt = await visibleText(page);
   const stillHasPwd = await page.$('input[type=password]:visible').catch(() => null);
   const loggedInSign = await findByText(page, LOGOUT);
@@ -193,9 +210,13 @@ export async function signup(ctx) {
     F.issue({ severity: 'critical', category: 'journey', persona, page: signupUrl, title: 'Sign-up crashes the server (5xx)', detail: ctx.lastServerError, suggestion: 'Check the registration endpoint logs.' });
   }
   if (success) {
-    state.account = { email: id.email, username: id.username, password: id.password, identity: id };
+    const acct = { email: id.email, username: id.username, password: id.password, identity: id, signupUrl };
+    if (!state.account) state.account = acct;
+    if (!state.signupUrl) state.signupUrl = signupUrl;
+    if (loggedInSign) ctx.loggedIn = true;
     F.journey(persona, 'signup', 'passed', `Created account ${id.email}`);
     F.pass({ category: 'journey', persona, page: signupUrl, title: 'New user can sign up' });
+    return acct;
   } else {
     const errLine = (txt.match(/[^\n]*(error|invalid|required|failed|taken|exists)[^\n]*/i) || [''])[0].slice(0, 200);
     F.journey(persona, 'signup', 'failed', errLine || 'No sign of success after submitting');
@@ -204,14 +225,15 @@ export async function signup(ctx) {
 }
 
 // ---------- login (incl. wrong-password check) ----------
-export async function login(ctx) {
+export async function login(ctx, { creds: given, quiet = false } = {}) {
   const { opts, state, F, persona, page, context } = ctx;
-  const creds = opts.loginEmail ? { email: opts.loginEmail, username: opts.loginEmail, password: opts.loginPassword } : state.account;
+  const creds = given || (opts.loginEmail ? { email: opts.loginEmail, username: opts.loginEmail, password: opts.loginPassword } : state.account);
   // log out by clearing cookies/storage — like a fresh visit
   await context.clearCookies();
   await goto(ctx, opts.url);
   await page.evaluate(() => { try { localStorage.clear(); sessionStorage.clear(); } catch {} });
   if (opts.loginUrl) await goto(ctx, new URL(opts.loginUrl, opts.url).toString());
+  else if (quiet && state.loginUrl) await goto(ctx, state.loginUrl);
   else {
     const link = await findByText(page, LOGIN);
     if (!link) {
@@ -241,6 +263,13 @@ export async function login(ctx) {
     else await page.keyboard.press('Enter');
     await settle(page, 900);
   };
+  state.loginUrl = state.loginUrl || loginUrl;
+  if (quiet && creds) {
+    await doLogin(creds.password);
+    const ok = (await findByText(page, LOGOUT)) || (!(await page.$('input[type=password]:visible').catch(() => null)) && page.url() !== loginUrl);
+    ctx.loggedIn = !!ok;
+    return !!ok;
+  }
   // wrong password must fail
   await doLogin('Wrong-Password-123!');
   const wrongTxt = await visibleText(page);
@@ -260,6 +289,7 @@ export async function login(ctx) {
   const ok = (await findByText(page, LOGOUT)) || (!(await page.$('input[type=password]:visible').catch(() => null)) && page.url() !== loginUrl);
   if (ok) {
     state.loggedIn = true;
+    ctx.loggedIn = true;
     F.journey(persona, 'login', 'passed', `Logged in as ${creds.email}`);
     F.pass({ category: 'journey', persona, page: loginUrl, title: 'Existing user can log in' });
     // session should survive a reload

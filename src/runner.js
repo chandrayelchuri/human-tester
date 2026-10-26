@@ -1,8 +1,12 @@
-import { chromium } from 'playwright';
+import { chromium, firefox, webkit } from 'playwright';
 import fs from 'node:fs';
 import { Findings } from './findings.js';
 import { PERSONAS, resolvePersonas } from './personas.js';
-import { JOURNEYS, explore } from './journeys.js';
+import { JOURNEYS as BASE, explore } from './journeys.js';
+import * as more from './journeys2.js';
+import { aiAgent } from './ai-agent.js';
+
+const JOURNEYS = { ...BASE, exploreLoggedIn: more.exploreLoggedIn, clickAllLoggedIn: more.clickAllLoggedIn, crud: more.crud, search: more.search, filters: more.filters, upload: more.upload, forgotPassword: more.forgotPassword, crowd: more.crowd, privacy: more.privacy, crossBrowser: more.crossBrowser, aiAgent };
 import { sameOrigin, normalizeUrl } from './utils.js';
 
 export const DEFAULTS = {
@@ -58,24 +62,45 @@ function attachListeners(ctx, page) {
   });
 }
 
-async function runPersona(browser, name, opts, state, F, log) {
+const browsers = new Map();
+async function getBrowser(type, opts) {
+  if (!browsers.has(type)) {
+    const engine = { chromium, firefox, webkit }[type];
+    browsers.set(type, engine.launch({ headless: opts.headless }).catch((e) => ({ _err: e })));
+  }
+  return browsers.get(type);
+}
+
+// A ctx is one virtual user: its own browser context (cookies), page and error counters.
+async function makeCtx(name, opts, state, F) {
   const p = PERSONAS[name];
+  const browser = await getBrowser(p.browser || 'chromium', opts);
+  if (browser._err) {
+    return { persona: name, F, state, opts, unavailable: `${p.browserLabel || p.browser} engine not installed here (run: npx playwright install ${p.browser})`, close: async () => {} };
+  }
   const context = await browser.newContext({
     viewport: p.viewport,
-    isMobile: !!p.isMobile,
+    isMobile: !!p.isMobile && (p.browser || 'chromium') === 'chromium',
     hasTouch: !!p.hasTouch,
     userAgent: p.userAgent,
-    ignoreHTTPSErrors: false,
   });
   const page = await context.newPage();
   const ctx = {
-    persona: name, page, context, F, state,
+    persona: name, page, context, F, state, browserLabel: p.browserLabel || 'Chrome',
     opts: { ...opts, isMobile: !!p.isMobile },
     errorCount: 0, serverErrorCount: 0, requestCount: 0,
-    lastError: '', lastServerError: '', current: '', xssFired: false,
+    lastError: '', lastServerError: '', current: '', xssFired: false, loggedIn: false,
   };
   attachListeners(ctx, page);
-  if (!state.visited.size && !p.journeys.includes('explore')) {
+  ctx.spawn = (n = name) => makeCtx(n, opts, state, F);
+  ctx.close = () => context.close().catch(() => {});
+  return ctx;
+}
+
+async function runPersona(name, opts, state, F, log) {
+  const p = PERSONAS[name];
+  const ctx = await makeCtx(name, opts, state, F);
+  if (!ctx.unavailable && !state.visited.size && !p.journeys.includes('explore')) {
     log(`  [${name}] mapping the site first…`);
     await explore(ctx);
   }
@@ -83,13 +108,14 @@ async function runPersona(browser, name, opts, state, F, log) {
     log(`  [${name}] ${j}…`);
     const t0 = Date.now();
     try {
-      await JOURNEYS[j](ctx);
+      if (ctx.unavailable && j !== 'crossBrowser') F.journey(name, j, 'skipped', ctx.unavailable);
+      else await JOURNEYS[j](ctx);
     } catch (e) {
       F.journey(name, j, 'failed', 'Tester error: ' + String(e.message).split('\n')[0]);
     }
     log(`  [${name}] ${j} done in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
   }
-  await context.close();
+  await ctx.close();
 }
 
 async function checkExternalLinks(browser, state, F, opts) {
@@ -112,24 +138,25 @@ export async function run(userOpts, log = console.log) {
   opts.url = normalizeUrl(opts.url);
   fs.mkdirSync(`${opts.out}/shots`, { recursive: true });
   const F = new Findings();
-  const state = { visited: new Set(), formPages: new Set(), externalLinks: new Set(), linkedFrom: new Map(), account: null, loggedIn: false };
-  const browser = await chromium.launch({ headless: opts.headless });
+  const state = { visited: new Set(), visitedAuthed: new Set(), privateUrls: new Set(), formPages: new Set(), externalLinks: new Set(), linkedFrom: new Map(), created: [], account: null, loggedIn: false, signupUrl: null, loginUrl: null };
+  browsers.clear();
   const started = new Date();
   const personas = resolvePersonas(opts.personas);
-  // explorer first so everyone else knows the site map
-  personas.sort((a, b) => (a === 'explorer' ? -1 : b === 'explorer' ? 1 : 0));
+  // explorer maps the site and signup finds the account pages before the others need them
+  const order = ['explorer', 'signup'];
+  personas.sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99));
   log(`Human Tester → ${opts.url}`);
   log(`Personas: ${personas.join(', ')}`);
   for (const name of personas) {
     log(`\n▶ ${PERSONAS[name].label}`);
-    await runPersona(browser, name, opts, state, F, log);
+    await runPersona(name, opts, state, F, log);
   }
-  if (opts.checkExternal !== false) await checkExternalLinks(browser, state, F, opts);
-  await browser.close();
+  if (opts.checkExternal !== false) await checkExternalLinks(await getBrowser('chromium', opts), state, F, opts);
+  for (const b of browsers.values()) { const br = await b; if (!br._err) await br.close().catch(() => {}); }
   return {
     meta: {
       tool: 'human-tester',
-      version: '0.1.0',
+      version: '0.2.0',
       url: opts.url,
       startedAt: started.toISOString(),
       finishedAt: new Date().toISOString(),
