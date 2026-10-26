@@ -1,5 +1,5 @@
 name: 'Human Tester'
-description: 'Human texture testing — virtual users test every page, button, sign-up, login and form on sites built with AI.'
+description: 'Human-like tester for websites and apps built with AI — virtual users test every page, button, sign-up, login and form on sites built with AI.'
 branding:
   icon: 'users'
   color: 'purple'

@@ -1,6 +1,6 @@
 # Human Tester
 
-**Human texture testing — it tests all your websites and apps which you build by AI.**
+**Human-like tester for websites and apps built with AI.**
 
 Human Tester sends a crowd of virtual users into your website. They don't just load pages — they behave like real people with different needs: they click every button, open every page, sign up for an account, log out, log back in, edit their profile, type messy data into forms, use a phone, use only a keyboard, and suffer slow internet. Then you get a clear report: **what works, what's broken, and what to improve.**
 

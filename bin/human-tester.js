@@ -4,7 +4,7 @@ import { testSite } from '../src/index.js';
 import { PERSONAS } from '../src/personas.js';
 
 const HELP = `
-Human Tester — human texture testing for websites & apps built with AI.
+Human Tester — human-like tester for websites & apps built with AI.
 
 Usage:
   human-tester <url> [options]
