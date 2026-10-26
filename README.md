@@ -35,7 +35,7 @@ Set `ANTHROPIC_API_KEY` and the report also gets an **AI review**: what's workin
 ## Quick start
 
 ```bash
-git clone https://github.com/<you>/human-tester && cd human-tester
+git clone https://github.com/chandrayelchuri/human-tester && cd human-tester
 npm install
 npx playwright install chromium
 
@@ -68,7 +68,7 @@ It finds the server crash, the XSS hole, the profile that never saves, the dead 
 ## Use it in GitHub Actions
 
 ```yaml
-- uses: <you>/human-tester@main
+- uses: chandrayelchuri/human-tester@main
   with:
     url: https://staging.your-site.com
     fail-under: 70

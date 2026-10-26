@@ -43,7 +43,6 @@ export class Findings {
   }
 
   score() {
-    // 100 minus weighted penalties, floored at 0
     // diminishing penalty: a few bad bugs hurt a lot, a long tail of nits doesn't zero the score
     const w = { critical: 12, major: 4, minor: 1, info: 0 };
     const penalty = this.issues.reduce((s, i) => s + (w[i.severity] || 0), 0)
