@@ -4,3 +4,4 @@ ht-runs/
 reports/*
 !reports/demo/
 .env
+package-lock.json
