@@ -91,7 +91,8 @@ export function makeIdentity(domainHint = 'example.com') {
     email: `testhuman+${id}@${domainHint.includes('.') ? 'mailinator.com' : 'example.com'}`,
     password: 'Ht!' + id + 'Aa9',
     phone: '5555550' + String(Math.floor(Math.random() * 900) + 100),
-    address: '123 Test Street',
+    // Every virtual user lives somewhere different: many apps (rightly) allow one account per address.
+    address: `${100 + Math.floor(Math.random() * 9800)} ${['Oak', 'Maple', 'Cedar', 'Pine', 'Elm', 'Birch'][Math.floor(Math.random() * 6)]} ${['Street', 'Avenue', 'Lane', 'Drive'][Math.floor(Math.random() * 4)]}`,
     city: 'Houston',
     state: 'TX',
     zip: '77002',

@@ -58,6 +58,7 @@ Options:
 --crowd 10        # simultaneous users for the crowd test (default 5)
 --goals "Book a cleaning appointment|Post a classified ad"   # goals for the AI end-user
 --unsafe          # ALSO click delete / pay / checkout (only on test/staging sites!)
+--chrome-path /usr/bin/google-chrome   # use an installed Chrome (or set HT_CHROME_PATH)
 --headed          # watch the browser do it
 --fail-under 70   # exit 1 for CI if score < 70
 --config ht.json  # all options from a file
@@ -71,6 +72,19 @@ node bin/human-tester.js http://localhost:4321 --out reports/demo
 ```
 
 It finds the server crash, the XSS hole, **one user's notes visible to other users and to logged-out visitors**, the 12 MB upload crash, the sort dropdown that does nothing, the profile that never saves, the dead "Subscribe" button, the JS error on "Open cart", the 404 link, broken images, "Lorem ipsum", sideways scrolling on phones and more. See [`reports/demo/report.md`](reports/demo/report.md).
+
+## Acting like a real person
+
+Human Tester tries hard not to report things a real user wouldn't call a bug:
+
+- Disabled buttons and buttons that are already selected (`aria-pressed`, `aria-selected`, `aria-current`) are not clicked — they are meant to do nothing.
+- Text boxes (including search comboboxes) are typed into, not "clicked".
+- A pop-up opened by one click is closed (Escape) before the next button; if a notice or animation is in the way, it waits a moment and tries again.
+- Sign-up leaves "(optional)" boxes — referral, coupon, promo or discount codes — empty, and every virtual user has its own street address (many apps allow one account per address).
+- Created items are tagged with a marker at the **start** of each value, so they are still found when an app shows only a first name or shortens text; edits change every box holding the marker.
+- A link that starts a file download (e.g. a CSV export) counts as working.
+- A 400/409/422/429 answer from an API is the app politely refusing bad input — not a "missing resource".
+- If Chrome can't start at all, it stops with a clear message instead of a report full of skipped tests.
 
 ## Use it in GitHub Actions
 

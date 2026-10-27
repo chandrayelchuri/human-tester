@@ -46,7 +46,9 @@ function attachListeners(ctx, page) {
       ctx.serverErrorCount++;
       ctx.lastServerError = `${status} ${res.request().method()} ${url}`;
       if (!isDoc) F.issue({ severity: 'critical', category: 'broken', persona: ctx.persona, page: (ctx.current || page.url()).split(' → ')[0], title: `API/server error ${status}`, detail: `${res.request().method()} ${url}\nWhile: ${ctx.current || ''}`, suggestion: 'Check server logs for this endpoint.' });
-    } else if (status >= 400 && !isDoc && res.request().resourceType() !== 'image' && sameOrigin(url, opts.url) && !/favicon/.test(url) && ![401, 403].includes(status)) {
+    } else if (status >= 400 && !isDoc && res.request().resourceType() !== 'image' && sameOrigin(url, opts.url) && !/favicon/.test(url) && ![401, 403].includes(status)
+        // 400/402/409/422/429 from an API call is the app politely refusing bad input (e.g. a wrong code typed in) — not a missing file.
+        && !(['fetch', 'xhr'].includes(res.request().resourceType()) && [400, 402, 409, 422, 429].includes(status))) {
       F.issue({ severity: 'minor', category: 'broken', persona: ctx.persona, global: true, page: (ctx.current || page.url()).split(' → ')[0], title: `Missing resource (${status})`, detail: url, suggestion: 'A file or API the page asks for does not exist. Fix the path or remove the reference.' });
     }
   });
@@ -66,7 +68,10 @@ const browsers = new Map();
 async function getBrowser(type, opts) {
   if (!browsers.has(type)) {
     const engine = { chromium, firefox, webkit }[type];
-    browsers.set(type, engine.launch({ headless: opts.headless }).catch((e) => ({ _err: e })));
+    // Use an already-installed Chrome/Chromium when given (--chrome-path or HT_CHROME_PATH), e.g. on CI images
+    // that ship a browser but not Playwright's matching download.
+    const executablePath = type === 'chromium' ? (opts.chromePath || process.env.HT_CHROME_PATH || undefined) : undefined;
+    browsers.set(type, engine.launch({ headless: opts.headless, ...(executablePath ? { executablePath } : {}) }).catch((e) => ({ _err: e })));
   }
   return browsers.get(type);
 }
@@ -97,6 +102,12 @@ async function makeCtx(name, opts, state, F) {
   return ctx;
 }
 
+/** Chrome is needed for almost every persona: stop with a clear message instead of a report full of skipped tests. */
+export async function ensureChromium(opts) {
+  const b = await getBrowser('chromium', opts);
+  if (b?._err) throw new Error(`Chrome could not start, so no virtual users can run.\n${String(b._err.message).split('\n')[0]}\nFix: run "npx playwright install chromium", or point to an installed Chrome with --chrome-path /path/to/chrome (or HT_CHROME_PATH).`);
+}
+
 async function runPersona(name, opts, state, F, log) {
   const p = PERSONAS[name];
   const ctx = await makeCtx(name, opts, state, F);
@@ -119,6 +130,7 @@ async function runPersona(name, opts, state, F, log) {
 }
 
 async function checkExternalLinks(browser, state, F, opts) {
+  if (!browser || browser._err) return; // no browser available: nothing to check (reported elsewhere)
   const links = [...state.externalLinks].filter((u) => !/(facebook|instagram|linkedin|twitter|x)\.com/.test(u)).slice(0, 40);
   const ctx = await browser.newContext();
   for (const url of links) {
@@ -147,6 +159,7 @@ export async function run(userOpts, log = console.log) {
   personas.sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99));
   log(`Human Tester → ${opts.url}`);
   log(`Personas: ${personas.join(', ')}`);
+  await ensureChromium(opts);
   for (const name of personas) {
     log(`\n▶ ${PERSONAS[name].label}`);
     await runPersona(name, opts, state, F, log);

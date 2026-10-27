@@ -13,6 +13,11 @@ export async function goto(ctx, url) {
   const res = await ctx.page.goto(url, { waitUntil: 'domcontentloaded', timeout: ctx.opts.timeout }).catch((e) => ({ _err: e }));
   await settle(ctx.page);
   const ms = Date.now() - t0;
+  if (res && res._err && /Download is starting/i.test(String(res._err.message))) {
+    // The link is a file download (e.g. a CSV export), not a page — that's working as intended.
+    ctx.F.pass({ category: 'interaction', persona: ctx.persona, page: url, title: 'Download link starts a file download' });
+    return null;
+  }
   if (res && res._err) {
     ctx.F.issue({ severity: 'critical', category: 'broken', persona: ctx.persona, page: url, title: 'Page failed to load', detail: String(res._err.message).split('\n')[0], suggestion: 'Check the server is up and the URL is correct.' });
     return null;
@@ -77,12 +82,24 @@ async function tagClickables(page) {
     document.querySelectorAll(sel).forEach((el, i) => {
       const r = el.getBoundingClientRect();
       if (!r.width || !r.height || getComputedStyle(el).visibility === 'hidden') return;
+      if (el.disabled || el.getAttribute('aria-disabled') === 'true') return; // a disabled button is meant to do nothing
+      if (['aria-pressed', 'aria-selected', 'aria-current', 'aria-checked'].some((k) => el.getAttribute(k) === 'true' || (k === 'aria-current' && el.getAttribute(k) && el.getAttribute(k) !== 'false'))) return; // already chosen — choosing it again changes nothing, by design
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) && !['button', 'submit', 'reset'].includes(el.type)) return; // text boxes (e.g. comboboxes) are typed into, not clicked
       if (el.closest('form') && (el.type === 'submit' || (el.tagName === 'BUTTON' && !el.getAttribute('type')))) return; // forms are tested separately
       el.setAttribute('data-ht-id', String(i));
       out.push({ id: String(i), text: (el.innerText || el.value || el.getAttribute('aria-label') || el.title || el.tagName).trim().slice(0, 60) });
     });
     return out;
   });
+}
+
+/** Close an open dialog / menu the way a person would (Escape). Returns true if one was open. */
+export async function closeOverlays(page) {
+  const isOpen = () => page.evaluate(() => !!document.querySelector('[role=dialog][aria-modal=true], dialog[open], [role=menu]:not([hidden]), [role=listbox]:not([hidden]), [data-state=open][role=dialog]')
+    || getComputedStyle(document.body).pointerEvents === 'none').catch(() => false);
+  const open = await isOpen();
+  for (let i = 0; i < 3 && (await isOpen()); i++) { await page.keyboard.press('Escape').catch(() => {}); await sleep(250); } // nested menus may need more than one Escape
+  return open;
 }
 
 export async function clickAll(ctx, { urls, name = 'clickAll' } = {}) {
@@ -107,13 +124,28 @@ export async function clickAll(ctx, { urls, name = 'clickAll' } = {}) {
       const reqBefore = ctx.requestCount;
       const errBefore = ctx.errorCount;
       const popup = ctx.context.waitForEvent('page', { timeout: 1200 }).catch(() => null);
-      const ok = await el.click({ timeout: 3000 }).then(() => true).catch(() => false);
+      let ok = await el.click({ timeout: 3000 }).then(() => true).catch(() => false);
+      if (!ok && (await closeOverlays(page))) ok = await el.click({ timeout: 3000 }).then(() => true).catch(() => false); // a pop-up left open was in the way
+      if (!ok) { // a person waits a moment for a notice/animation to clear, then tries again
+        await sleep(1500);
+        const again = await page.$(`[data-ht-id="${item.id}"]`);
+        if (again && !(await again.isEnabled().catch(() => true))) continue; // it became disabled (e.g. "Mark all read" after use) — fine
+        if (again) ok = await again.click({ timeout: 3000 }).then(() => true).catch(() => false);
+      }
       clicked++;
       await sleep(700);
       const newTab = await popup;
       if (newTab) await newTab.close().catch(() => {});
       if (!ok) {
-        F.issue({ severity: 'minor', category: 'ux', persona, page: url, title: `Can't click "${item.text}"`, detail: 'Element is covered by something else or not interactive.', suggestion: 'Check for overlays, z-index issues, or elements hidden behind sticky headers.' });
+        // Say WHAT is on top, so the report is actionable.
+        const cover = await page.evaluate((hid) => {
+          const el = document.querySelector(`[data-ht-id="${hid}"]`); if (!el) return 'it disappeared from the page';
+          el.scrollIntoView({ block: 'center' }); const r = el.getBoundingClientRect();
+          const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          if (!top || el.contains(top) || top.contains(el)) return getComputedStyle(document.body).pointerEvents === 'none' ? 'the whole page is blocked (body pointer-events: none — a menu or dialog is still open)' : 'nothing visible on top';
+          return `${top.tagName.toLowerCase()}${top.id ? '#' + top.id : ''}.${String(top.className).split(' ').slice(0, 3).join('.')} "${(top.innerText || '').trim().slice(0, 40)}"`;
+        }, item.id).catch(() => 'unknown');
+        F.issue({ severity: 'minor', category: 'ux', persona, page: url, title: `Can't click "${item.text}"`, detail: `Element is covered or not interactive. On top: ${cover}.`, suggestion: 'Check for overlays, z-index issues, or elements hidden behind sticky headers.' });
         continue;
       }
       if (ctx.errorCount > errBefore) {
@@ -127,6 +159,7 @@ export async function clickAll(ctx, { urls, name = 'clickAll' } = {}) {
       } else {
         F.pass({ category: 'interaction', persona, page: url, title: `"${item.text}" responds to clicks` });
       }
+      await closeOverlays(page); // a real person closes the pop-up before trying the next button
     }
   }
   F.journey(persona, name, 'passed', `Clicked ${clicked} element(s), ${dead} did nothing`);

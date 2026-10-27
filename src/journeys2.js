@@ -3,7 +3,7 @@
 // and other browsers.
 import fs from 'node:fs';
 import zlib from 'node:zlib';
-import { goto, shot, explore, clickAll, signup, login } from './journeys.js';
+import { goto, shot, explore, clickAll, signup, login, closeOverlays } from './journeys.js';
 import { pageChecks } from './checks.js';
 import { makeIdentity } from './personas.js';
 import {
@@ -73,10 +73,11 @@ export async function crud(ctx) {
     await settle(page);
     const form = await contentForm(page);
     if (!form) continue;
-    const id = { ...makeIdentity(), fullName: `Test ${marker}`, message: `Created by Human Tester ${marker}`, company: `Co ${marker}` };
+    // The marker goes FIRST in every value, so it is still visible when an app shows only a first word or cuts text short.
+    const id = { ...makeIdentity(), fullName: `${marker} Test`, message: `${marker} created by Human Tester`, company: `${marker} Co` };
     await fillForm(form, id);
     const firstText = await form.$('input[type=text]:visible, input:not([type]):visible, textarea:visible');
-    if (firstText) await firstText.fill(`Item ${marker}`).catch(() => {});
+    if (firstText) await firstText.fill(`${marker} Item`).catch(() => {});
     const s = await findSubmit(form);
     if (!s) continue;
     const srv0 = ctx.serverErrorCount;
@@ -87,9 +88,16 @@ export async function crud(ctx) {
       return F.journey(persona, 'crud', 'failed', `"${btn.text}" → server error`);
     }
     let where = (await visibleText(page)).includes(marker) ? page.url() : null;
+    // A real person reads the message: if the app explains why it can't add this (e.g. a limit is reached), that's a clear answer, not a lost item.
+    const refusal = where ? '' : await page.evaluate(() => [...document.querySelectorAll('[role=alert], [aria-live=assertive], [data-sonner-toast]')]
+      .map((e) => e.innerText.trim()).filter((t) => t.length > 8)[0] || '').catch(() => '');
+    if (refusal) {
+      F.issue({ severity: 'info', category: 'journey', persona, page: url, title: `"${btn.text}" was refused with a clear message`, detail: refusal.slice(0, 200), suggestion: 'Fine if this is a real limit; otherwise check why it was refused.' });
+      await closeOverlays(page); continue;
+    }
     if (!where) { await goto(ctx, url); if ((await visibleText(page)).includes(marker)) where = url; }
     if (!where) {
-      F.issue({ severity: 'major', category: 'journey', persona, page: url, title: `Item created with "${btn.text}" never shows up`, detail: `Filled the form with "Item ${marker}" and submitted. It did not appear afterwards or after reloading.`, suggestion: 'Make sure the item is saved and the list re-fetches after creating (or show a clear error).', screenshot: await shot(ctx, 'create-missing') });
+      F.issue({ severity: 'major', category: 'journey', persona, page: url, title: `Item created with "${btn.text}" never shows up`, detail: `Filled the form with "${marker} Item" and submitted. It did not appear afterwards or after reloading.`, suggestion: 'Make sure the item is saved and the list re-fetches after creating (or show a clear error).', screenshot: await shot(ctx, 'create-missing') });
       return F.journey(persona, 'crud', 'failed', `Created via "${btn.text}" but it never appeared`);
     }
     F.pass({ category: 'journey', persona, page: url, title: `User can create content ("${btn.text}")` });
@@ -111,9 +119,12 @@ export async function crud(ctx) {
       await editBtn.click().catch(() => {});
       await settle(page);
       const f = await contentForm(page);
-      const field = f && (await f.$(`input[value*="${marker}"], textarea`));
+      // Change every box that holds our marker: the app may display a different one (e.g. a preferred name).
+      const fields = f ? await f.$$(`input[value*="${marker}"]`) : [];
+      if (!fields.length && f) { const ta = await f.$('textarea'); if (ta) fields.push(ta); }
+      const field = fields[0];
       if (field) {
-        await field.fill(`Item ${marker} edited`);
+        for (const el of fields) await el.fill(`${marker} edited`).catch(() => {});
         const s2 = await findSubmit(f);
         if (s2) await s2.click().catch(() => {});
         await settle(page, 800);
@@ -301,7 +312,7 @@ export async function forgotPassword(ctx) {
       F.issue({ severity: 'critical', category: 'journey', persona, page: resetUrl, title: 'Password reset crashes the server', suggestion: 'Check the reset endpoint and email provider settings.' });
       return F.journey(persona, 'forgotPassword', 'failed', 'Server error');
     }
-    if (/sent|check your (e-?mail|inbox)|reset link|if (an|that) (account|email) exists|instructions/i.test(real.text)) F.pass({ category: 'journey', persona, page: resetUrl, title: 'Forgot-password sends a reset message' });
+    if (/sent|check your (e-?mail|inbox)|reset link|reset code|if (an|that) (account|email) exists|instructions/i.test(real.text)) F.pass({ category: 'journey', persona, page: resetUrl, title: 'Forgot-password sends a reset message' });
     else F.issue({ severity: 'minor', category: 'ux', persona, page: resetUrl, title: 'No confirmation after requesting a password reset', suggestion: 'Tell users "If that email has an account, we sent a reset link."' });
     const fake = await send(`nobody-${Date.now()}@example.com`);
     if (fake && /not (found|registered|exist)|no (account|user)/i.test(fake.text)) F.issue({ severity: 'info', category: 'security', persona, page: resetUrl, title: 'Password reset reveals which emails have accounts', suggestion: 'Show the same message for every email so attackers can\'t discover your users.' });

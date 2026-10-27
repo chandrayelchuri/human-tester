@@ -22,6 +22,7 @@ Options:
   --goals "a|b"            goals for the AI end-user, separated by |  (needs ANTHROPIC_API_KEY)
   --ai-steps <n>           max steps per AI goal (default 20)
   --unsafe                 also click delete/pay/checkout buttons (ONLY on test environments)
+  --chrome-path <file>     use an installed Chrome/Chromium (or set HT_CHROME_PATH)
   --headed                 watch the browser
   --no-screenshots
   --fail-under <score>     exit code 1 if score is below this (for CI)
@@ -71,9 +72,12 @@ if (pos[0] === 'serve') {
     goals: (o.goals || process.env.HT_GOALS) ? (o.goals || process.env.HT_GOALS).split('|').map((g) => g.trim()).filter(Boolean) : cfg.goals,
     aiSteps: Number(o.aiSteps || cfg.aiSteps || 20),
     headless: !o.headed,
+    chromePath: o.chromePath || cfg.chromePath,
     screenshots: !o.noScreenshots,
   };
-  const r = await testSite(opts);
+  let r;
+  try { r = await testSite(opts); }
+  catch (e) { console.error(`\n✖ ${e.message}`); process.exit(2); }
   console.log(`\nScore ${r.score}/100 — ${r.counts.critical} critical, ${r.counts.major} major, ${r.counts.minor} minor, ${r.counts.passes} passed`);
   for (const j of r.journeys.filter((j) => j.status === 'failed')) console.log(`  ❌ ${j.persona}/${j.journey}: ${j.detail}`);
   console.log(`Report: ${opts.out}/index.html`);

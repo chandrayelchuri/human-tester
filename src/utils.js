@@ -7,7 +7,7 @@ export const SIGNUP = /\b(sign ?up|register|create (an )?account|get started|joi
 export const LOGIN = /\b(log ?in|sign ?in|login|signin|my account)\b/i;
 export const PROFILE = /\b(profile|account settings|my account|settings|edit profile|account)\b/i;
 export const SUCCESS_TEXT = /\b(welcome|success|successfully|thank you|thanks|account created|signed in|logged in|dashboard|saved|updated|verify your email|check your email|confirmation)\b/i;
-export const ERROR_TEXT = /\b(error|invalid|incorrect|failed|went wrong|try again|not found|required|already (exists|taken|registered)|exception)\b/i;
+export const ERROR_TEXT = /\b(error|invalid|incorrect|not correct|doesn't match|does not match|failed|went wrong|try again|not found|required|already (exists|taken|registered)|exception)\b/i;
 
 export function sameOrigin(a, b) {
   try {
@@ -91,6 +91,8 @@ export async function fillForm(scope, identity, mode = 'good') {
       const type = ((await el.getAttribute('type')) || (await el.evaluate((n) => n.tagName.toLowerCase()))).toLowerCase();
       if (['hidden', 'submit', 'button', 'reset', 'image', 'file'].includes(type)) continue;
       const hints = await fieldHints(el);
+      // A real person filling a sign-up form leaves "(optional)" boxes (referral, discount, coupon code…) empty.
+      if (mode === 'good' && /\boptional\b|referral|coupon|promo|discount/.test(hints) && !(await el.getAttribute('required'))) continue;
       if (type === 'select') {
         const opts = await el.$$eval('option', (os) => os.map((o) => o.value).filter((v) => v !== ''));
         if (opts.length) await el.selectOption(opts[Math.min(1, opts.length - 1)]);
